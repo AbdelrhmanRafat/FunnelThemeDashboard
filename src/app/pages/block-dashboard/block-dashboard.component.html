@@ -1,16 +1,84 @@
-<div class="flex h-screen  w-full bg-gray-700">
-    <!-- Sidebar Component -->
-  <app-block-sidebar 
-    [selectedBlockId]="selectedBlock?.id || null"
-    (blockSelected)="onBlockSelected($event)"
-    (blockDeleted)="onBlockDeleted($event)"
-    (blockVisibilityToggled)="onBlockVisibilityToggled($event)">
-  </app-block-sidebar>
-  <!-- Main Content Form Component -->
-  <app-block-dashboard-form 
-    [selectedBlock]="selectedBlock"
-    [availableComponents]="availableComponents"
-    (blockUpdated)="onBlockUpdated($event)"
-    (blockVisibilityToggled)="onBlockVisibilityToggled($event)">
-  </app-block-dashboard-form>
+<!-- Mobile Header (visible on small screens) -->
+<div class="lg:hidden bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-50">
+  <div class="flex justify-between items-center">
+    <h1 class="text-lg font-bold">Block Dashboard</h1>
+    <button 
+      (click)="toggleMobileSidebar()" 
+      class="p-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
   </div>
+</div>
+
+<!-- Mobile Sidebar Overlay -->
+<div 
+  *ngIf="isMobileSidebarOpen" 
+  class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 lg:hidden"
+  (click)="closeMobileSidebar()">
+</div>
+
+<!-- Main Container -->
+<div class="w-full px-2 sm:px-4 py-4 lg:py-8">
+  <div class="flex w-full justify-start items-start gap-0 lg:gap-5">
+    
+    <!-- Sidebar Component -->
+    <app-block-sidebar 
+      class="fixed  top-0 left-0 w-80 sm:w-96 lg:w-3/12 h-full lg:h-auto bg-gray-800 lg:bg-transparent z-50 lg:z-auto transform transition-transform duration-300 lg:transform-none lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto"
+      [class.translate-x-0]="isMobileSidebarOpen"
+      [class.-translate-x-full]="!isMobileSidebarOpen"
+      [selectedBlockId]="selectedBlock?.id || null"
+      (blockSelected)="onBlockSelected($event)"
+      (blockDeleted)="onBlockDeleted($event)"
+      (blockVisibilityToggled)="onBlockVisibilityToggled($event)"
+      (closeMobileSidebar)="closeMobileSidebar()">
+    </app-block-sidebar>
+
+    <!-- Main Section -->
+    <div class="w-full lg:w-9/12 flex flex-col space-y-4 lg:space-y-6">
+      
+      <!-- Two-Step Verification + Save Button -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 lg:px-4 py-3 lg:py-2 bg-gray-800 rounded-lg shadow border border-gray-700 gap-4 sm:gap-0">
+        
+        <!-- Two-Step Progress -->
+        <div class="flex items-center gap-4 sm:gap-6 lg:gap-10 w-full sm:w-auto justify-center sm:justify-start">
+          <!-- Step 1 -->
+          <div class="flex flex-col items-center">
+            <div class="w-10 sm:w-12 lg:w-14 h-10 sm:h-12 lg:h-14 rounded-full border-2 sm:border-4 border-blue-500 bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white text-sm sm:text-lg lg:text-xl font-bold shadow-lg">
+              1
+            </div>
+            <span class="text-xs sm:text-sm text-blue-300 mt-1 lg:mt-2">Finalize Blocks</span>
+          </div>
+          
+          <!-- Line -->
+          <div class="w-12 sm:w-16 lg:w-20 h-0.5 lg:h-1 border-t-2 border-dashed border-blue-500"></div>
+          
+          <!-- Step 2 -->
+          <div class="flex flex-col items-center">
+            <div class="w-10 sm:w-12 lg:w-14 h-10 sm:h-12 lg:h-14 rounded-full border-2 sm:border-4 border-gray-500 bg-gray-800 flex items-center justify-center text-white text-sm sm:text-lg lg:text-xl font-bold shadow-inner">
+              2
+            </div>
+            <span class="text-xs sm:text-sm text-gray-400 mt-1 lg:mt-2">Save Blocks</span>
+          </div>
+        </div>
+        
+        <!-- Save Button -->
+        <div class="w-full sm:w-auto">
+          <button class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm sm:text-base lg:text-lg font-medium px-4 sm:px-6 lg:px-10 py-3 lg:py-4 rounded-lg sm:rounded-full shadow-md transition-all">
+            Go to Save Blocks
+          </button>
+        </div>
+      </div>
+      
+      <!-- Main Form -->
+      <app-block-dashboard-form 
+        [selectedBlock]="selectedBlock"
+        [availableComponents]="availableComponents"
+        (blockUpdated)="onBlockUpdated($event)"
+        (blockVisibilityToggled)="onBlockVisibilityToggled($event)">
+      </app-block-dashboard-form>
+      
+    </div>
+  </div>
+</div>

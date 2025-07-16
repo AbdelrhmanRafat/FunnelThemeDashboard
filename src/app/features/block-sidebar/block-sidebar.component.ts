@@ -18,7 +18,7 @@ export class BlockSidebarComponent implements OnInit {
   @Output() blockSelected = new EventEmitter<Block>();
   @Output() blockDeleted = new EventEmitter<string>();
   @Output() blockVisibilityToggled = new EventEmitter<Block>();
-
+  @Output() closeMobileSidebar = new EventEmitter<void>(); // Fixed: Added 'new'
   // State
   blocks: Block[] = [];
   availableComponents: ComponentDefinition[] = [];
@@ -45,6 +45,7 @@ export class BlockSidebarComponent implements OnInit {
     });
   }
 
+
   loadAvailableComponents(): void {
     this.blocksService.getAvailableComponents().subscribe({
       next: (components) => {
@@ -56,9 +57,7 @@ export class BlockSidebarComponent implements OnInit {
     });
   }
 
-  selectBlock(block: Block): void {
-    this.blockSelected.emit(block);
-  }
+  
 
   getComponentDisplayName(componentName: string): string {
     const component = this.availableComponents.find(c => c.name === componentName);
@@ -104,5 +103,15 @@ export class BlockSidebarComponent implements OnInit {
     setTimeout(() => {
       this.message = '';
     }, 3000);
+  }
+
+    selectBlock(block: any) {
+    this.blockSelected.emit(block);
+    this.closeMobileSidebar.emit(); // Emit close event when block is selected
+  }
+
+  // Add this method to handle the close button click
+  onCloseMobileSidebar() {
+    this.closeMobileSidebar.emit();
   }
 }

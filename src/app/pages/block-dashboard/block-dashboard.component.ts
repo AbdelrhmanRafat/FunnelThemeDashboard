@@ -36,10 +36,6 @@ export class BlockDashboardComponent implements OnInit {
 
   // ===== EVENT HANDLERS =====
 
-  onBlockSelected(block: Block): void {
-    this.selectedBlock = block;
-  }
-
   onBlockDeleted(blockId: string): void {
     // Clear selection if deleted block was selected
     if (this.selectedBlock && this.selectedBlock.id === blockId) {
@@ -58,4 +54,20 @@ export class BlockDashboardComponent implements OnInit {
       this.selectedBlock = updatedBlock;
     }
   }
+// In your main component
+isMobileSidebarOpen = false;
+
+toggleMobileSidebar() {
+  this.isMobileSidebarOpen = !this.isMobileSidebarOpen;
+}
+
+closeMobileSidebar() {
+  this.isMobileSidebarOpen = false;
+}
+
+// Handle block selection and close mobile sidebar
+onBlockSelected(block: any) {
+  this.selectedBlock = block;
+  this.closeMobileSidebar(); // Close sidebar when block is selected on mobile
+}
 }
