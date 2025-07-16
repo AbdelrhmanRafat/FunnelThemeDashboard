@@ -1,0 +1,10 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+    <div *ngFor="let theme of themes$ | async" [routerLink]="['/dashboard', theme.id]" class="bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer">
+      <img [src]="theme.imageUrl" alt="Theme Image" class="w-full h-48 object-cover">
+      <div class="p-4">
+        <h3 class="text-white text-lg font-semibold">{{ theme.title }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
