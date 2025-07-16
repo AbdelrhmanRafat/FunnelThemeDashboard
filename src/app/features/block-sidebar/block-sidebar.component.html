@@ -1,0 +1,96 @@
+<div class="w-80 bg-gray-800 border-r border-gray-700 flex flex-col">
+  <!-- Sidebar Header -->
+  <div class="p-6 border-b border-gray-700">
+    <h1 class="text-xl font-bold text-white">Block Dashboard</h1>
+    <p class="text-gray-400 text-sm mt-1">Manage your blocks</p>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div *ngIf="message" class="mx-4 mt-4 p-3 rounded-lg" 
+       [class]="messageType === 'error' ? 'bg-red-600' : 'bg-green-600'">
+    <span class="text-white text-sm">{{ message }}</span>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex-1 flex items-center justify-center">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      <p class="text-gray-400 mt-2">Loading blocks...</p>
+    </div>
+  </div>
+
+  <!-- Blocks List -->
+  <div *ngIf="!isLoading" class="flex-1 overflow-y-auto">
+    <div class="p-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-white">Blocks ({{ blocks.length }})</h2>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="blocks.length === 0" class="text-center py-8">
+        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        </svg>
+        <p class="text-gray-400">No blocks available</p>
+      </div>
+
+      <!-- Block Cards -->
+      <div class="space-y-3">
+        <div 
+          *ngFor="let block of blocks" 
+          (click)="selectBlock(block)"
+          class="p-4 rounded-lg border transition-all cursor-pointer group sidebar-block-card"
+          [class]="selectedBlockId === block.id 
+            ? 'bg-blue-900 border-blue-600 shadow-lg selected' 
+            : 'bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-gray-500'">
+          
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <!-- Block Title -->
+              <h3 class="font-medium text-white mb-1">
+                {{ getComponentDisplayName(block.name) }}
+              </h3>
+              
+              <!-- Block Subtitle -->
+              <p class="text-gray-400 text-sm mb-2">{{ block.data.title_en }}</p>
+              
+              <!-- Block Info -->
+              <div class="flex items-center space-x-4 text-xs">
+                <span class="text-gray-500">
+                  {{ block.data.items?.length || 0 }} items
+                </span>
+                <span 
+                  class="px-2 py-1 rounded-full"
+                  [class]="block.is_visible ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'">
+                  {{ block.is_visible ? 'Visible' : 'Hidden' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                (click)="toggleBlockVisibility(block, $event)"
+                class="p-1 rounded hover:bg-gray-600 transition-colors"
+                [title]="block.is_visible ? 'Hide Block' : 'Show Block'">
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path *ngIf="block.is_visible" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                  <path *ngIf="!block.is_visible" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+              </button>
+              
+              <button 
+                (click)="deleteBlock(block, $event)"
+                class="p-1 rounded hover:bg-red-600 transition-colors"
+                title="Delete Block">
+                <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

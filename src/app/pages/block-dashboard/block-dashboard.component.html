@@ -1,0 +1,16 @@
+<div class="flex h-screen  w-full bg-gray-700">
+    <!-- Sidebar Component -->
+  <app-block-sidebar 
+    [selectedBlockId]="selectedBlock?.id || null"
+    (blockSelected)="onBlockSelected($event)"
+    (blockDeleted)="onBlockDeleted($event)"
+    (blockVisibilityToggled)="onBlockVisibilityToggled($event)">
+  </app-block-sidebar>
+  <!-- Main Content Form Component -->
+  <app-block-dashboard-form 
+    [selectedBlock]="selectedBlock"
+    [availableComponents]="availableComponents"
+    (blockUpdated)="onBlockUpdated($event)"
+    (blockVisibilityToggled)="onBlockVisibilityToggled($event)">
+  </app-block-dashboard-form>
+  </div>
