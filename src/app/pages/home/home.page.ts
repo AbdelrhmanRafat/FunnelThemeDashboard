@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Theme } from '../models/theme.model';
-import { ThemeService } from '../services/theme.service';
+import { Theme } from '../../models/theme.model';
+import { ThemeService } from '../../core/services/theme.service';
 import { Observable } from 'rxjs';
 
 @Component({
