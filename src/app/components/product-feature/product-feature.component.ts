@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-product-feature',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './product-feature.html',
-  styleUrls: ['./product-feature.scss']
+  templateUrl: './product-feature.component.html',
+  styleUrls: ['./product-feature.component.scss']
 })
 export class ProductFeatureComponent { }

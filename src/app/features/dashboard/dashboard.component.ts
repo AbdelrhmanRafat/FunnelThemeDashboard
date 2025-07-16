@@ -9,8 +9,8 @@ import { ProductFeatureComponent } from '../../components/product-feature/produc
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, SidebarComponent, ThemeBuilderComponent, ProductFeatureComponent],
-  templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss']
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
   showProductFeature = true;

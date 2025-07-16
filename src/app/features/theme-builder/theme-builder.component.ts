@@ -6,8 +6,8 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
   selector: 'app-theme-builder',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './theme-builder.html',
-  styleUrls: ['./theme-builder.scss']
+  templateUrl: './theme-builder.component.html',
+  styleUrls: ['./theme-builder.component.scss']
 })
 export class ThemeBuilderComponent {
   title = 'Sample Title';
