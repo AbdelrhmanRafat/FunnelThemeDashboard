@@ -1,0 +1,280 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center">
+      <button 
+        (click)="goBack()" 
+        class="flex items-center text-blue-400 hover:text-blue-300 transition-colors mr-4">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Dashboard
+      </button>
+      <h1 class="text-3xl font-bold text-white">Manage Themes</h1>
+    </div>
+    
+    <button 
+      (click)="addNewTheme()" 
+      class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Add New Theme
+    </button>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div *ngIf="message" class="mb-6 p-4 rounded-lg" 
+       [class]="messageType === 'error' ? 'bg-red-600' : 'bg-green-600'">
+    <span class="text-white font-medium">{{ message }}</span>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="bg-gray-800 rounded-lg p-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Search -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Search Themes</label>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          placeholder="Search by name, key, or description...">
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Status Filter</label>
+        <select 
+          [(ngModel)]="statusFilter"
+          (ngModelChange)="onStatusFilterChange()"
+          class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+          <option value="all">All Themes</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </select>
+      </div>
+
+      <!-- Items Per Page -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Items Per Page</label>
+        <select 
+          [(ngModel)]="itemsPerPage"
+          (ngModelChange)="applyFilters()"
+          class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div *ngIf="selectedThemes.length > 0" class="mt-4 pt-4 border-t border-gray-700">
+      <div class="flex items-center justify-between">
+        <span class="text-gray-300">{{ selectedThemes.length }} theme(s) selected</span>
+        <div class="space-x-2">
+          <button 
+            (click)="bulkToggleStatus()"
+            [disabled]="isLoading"
+            class="bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+            Toggle Status
+          </button>
+          <button 
+            (click)="bulkDelete()"
+            [disabled]="isLoading"
+            class="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+            Delete Selected
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+    <p class="text-white mt-4">Loading themes...</p>
+  </div>
+
+  <!-- Themes Table -->
+  <div *ngIf="!isLoading" class="bg-gray-800 rounded-lg overflow-hidden shadow-xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-gray-300">
+        <thead class="text-xs text-gray-400 uppercase bg-gray-700">
+          <tr>
+            <th class="px-6 py-3">
+              <input 
+                type="checkbox" 
+                [checked]="areAllCurrentPageThemesSelected()"
+                (change)="selectAllThemes()"
+                class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
+            </th>
+            <th class="px-6 py-3">Image</th>
+            <th class="px-6 py-3 cursor-pointer hover:text-white transition-colors" 
+                (click)="sortBy('name')">
+              Name {{ getSortIcon('name') }}
+            </th>
+            <th class="px-6 py-3 cursor-pointer hover:text-white transition-colors" 
+                (click)="sortBy('key')">
+              Key {{ getSortIcon('key') }}
+            </th>
+            <th class="px-6 py-3 cursor-pointer hover:text-white transition-colors" 
+                (click)="sortBy('is_active')">
+              Status {{ getSortIcon('is_active') }}
+            </th>
+            <th class="px-6 py-3 cursor-pointer hover:text-white transition-colors" 
+                (click)="sortBy('updated_at')">
+              Updated {{ getSortIcon('updated_at') }}
+            </th>
+            <th class="px-6 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let theme of getPaginatedThemes()" 
+              class="bg-gray-800 border-b border-gray-700 hover:bg-gray-700 transition-colors">
+            
+            <!-- Checkbox -->
+            <td class="px-6 py-4">
+              <input 
+                type="checkbox" 
+                [checked]="isThemeSelected(theme.id)"
+                (change)="toggleThemeSelection(theme.id)"
+                class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
+            </td>
+
+            <!-- Image -->
+            <td class="px-6 py-4">
+              <img [src]="theme.image" [alt]="theme.name_en" 
+                   class="w-16 h-16 object-cover rounded-lg shadow-md">
+            </td>
+
+            <!-- Name -->
+            <td class="px-6 py-4">
+              <div>
+                <div class="font-medium text-white">{{ theme.name }}</div>
+                <div class="text-gray-400 text-sm">{{ theme.name_en }}</div>
+              </div>
+            </td>
+
+            <!-- Key -->
+            <td class="px-6 py-4">
+              <span class="bg-blue-900 text-blue-300 px-2 py-1 rounded text-xs font-mono">
+                {{ theme.key }}
+              </span>
+            </td>
+
+            <!-- Status -->
+            <td class="px-6 py-4">
+              <button 
+                (click)="toggleThemeStatus(theme.id)"
+                class="px-3 py-1 text-xs rounded-full border transition-colors"
+                [class]="getStatusBadgeClass(theme)">
+                {{ theme.is_active === 1 ? 'Active' : 'Inactive' }}
+              </button>
+            </td>
+
+            <!-- Updated Date -->
+            <td class="px-6 py-4 text-gray-400">
+              {{ theme.updated_at | date:'short' }}
+            </td>
+
+            <!-- Actions -->
+            <td class="px-6 py-4">
+              <div class="flex space-x-2">
+                <button 
+                  (click)="viewTheme(theme.id)"
+                  class="text-blue-400 hover:text-blue-300 transition-colors"
+                  title="View Details">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                </button>
+                
+                <button 
+                  (click)="editTheme(theme.id)"
+                  class="text-yellow-400 hover:text-yellow-300 transition-colors"
+                  title="Edit Theme">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                
+                <button 
+                  (click)="deleteTheme(theme.id)"
+                  class="text-red-400 hover:text-red-300 transition-colors"
+                  title="Delete Theme">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredThemes.length === 0" class="text-center py-12">
+      <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a4 4 0 004-4V5z"></path>
+      </svg>
+      <h3 class="text-xl font-semibold text-white mb-2">No themes found</h3>
+      <p class="text-gray-400 mb-4">Try adjusting your search criteria or filters.</p>
+      <button 
+        (click)="addNewTheme()" 
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+        Create Your First Theme
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="filteredThemes.length > 0" class="bg-gray-700 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <!-- Results Info -->
+        <div class="text-sm text-gray-300">
+          Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to 
+          {{ totalItems }} results
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="flex items-center space-x-2">
+          <!-- Previous Button -->
+          <button 
+            (click)="goToPage(currentPage - 1)"
+            [disabled]="currentPage === 1"
+            class="px-3 py-2 text-sm bg-gray-600 hover:bg-gray-500 disabled:bg-gray-800 disabled:text-gray-500 text-white rounded-lg transition-colors">
+            Previous
+          </button>
+
+          <!-- Page Numbers -->
+          <div class="flex space-x-1">
+            <button 
+              *ngFor="let page of getPageNumbers()"
+              (click)="goToPage(page)"
+              class="px-3 py-2 text-sm rounded-lg transition-colors"
+              [class]="page === currentPage 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-600 hover:bg-gray-500 text-white'">
+              {{ page }}
+            </button>
+          </div>
+
+          <!-- Next Button -->
+          <button 
+            (click)="goToPage(currentPage + 1)"
+            [disabled]="currentPage === getTotalPages()"
+            class="px-3 py-2 text-sm bg-gray-600 hover:bg-gray-500 disabled:bg-gray-800 disabled:text-gray-500 text-white rounded-lg transition-colors">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

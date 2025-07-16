@@ -1,0 +1,300 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center">
+      <button 
+        (click)="onCancel()" 
+        class="flex items-center text-blue-400 hover:text-blue-300 transition-colors mr-4">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Theme List
+      </button>
+      <h1 class="text-3xl font-bold text-white">Edit Theme</h1>
+      <span *ngIf="theme" class="ml-4 text-gray-400">ID: {{ theme.id }}</span>
+    </div>
+    
+    <div class="flex items-center space-x-3">
+      <button 
+        *ngIf="theme"
+        (click)="viewTheme()" 
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+        View Details
+      </button>
+      
+      <button 
+        (click)="deleteTheme()" 
+        [disabled]="isLoading || isLoadingTheme"
+        class="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+        Delete Theme
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Theme State -->
+  <div *ngIf="isLoadingTheme" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+    <p class="text-white mt-4">Loading theme details...</p>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div *ngIf="message" class="mb-6 p-4 rounded-lg animate-pulse" 
+       [class]="messageType === 'error' ? 'bg-red-600' : 'bg-green-600'">
+    <span class="text-white font-medium">{{ message }}</span>
+  </div>
+
+  <!-- Form Container -->
+  <div *ngIf="!isLoadingTheme && theme" class="bg-gray-800 rounded-lg shadow-xl p-6">
+    <!-- Theme Preview Card -->
+    <div class="bg-gray-700 rounded-lg p-4 mb-6">
+      <h3 class="text-lg font-semibold text-white mb-3">Current Theme Preview</h3>
+      <div class="flex items-center space-x-4">
+        <img [src]="theme.image" [alt]="theme.name_en" class="w-20 h-20 object-cover rounded-lg">
+        <div class="flex-1">
+          <h4 class="text-white font-medium">{{ theme.name }}</h4>
+          <p class="text-gray-400 text-sm">{{ theme.description_en }}</p>
+          <div class="flex items-center mt-2 space-x-2">
+            <span class="bg-blue-900 text-blue-300 px-2 py-1 rounded text-xs font-mono">{{ theme.key }}</span>
+            <span class="px-2 py-1 text-xs rounded-full" 
+                  [class]="theme.is_active === 1 ? 'bg-green-600 text-white' : 'bg-red-600 text-white'">
+              {{ theme.is_active === 1 ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="themeForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      
+      <!-- Basic Information Section -->
+      <div class="border-b border-gray-700 pb-6">
+        <h2 class="text-xl font-semibold text-white mb-4">Basic Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Arabic Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Arabic Name <span class="text-red-400">*</span>
+            </label>
+            <input 
+              type="text" 
+              formControlName="name_ar"
+              class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="أدخل اسم الثيم بالعربية"
+              dir="rtl">
+            <div *ngIf="nameAr?.invalid && nameAr?.touched" class="text-red-400 text-sm mt-1">
+              <span *ngIf="nameAr?.errors?.['required']">Arabic name is required</span>
+              <span *ngIf="nameAr?.errors?.['minlength']">Arabic name must be at least 2 characters</span>
+            </div>
+          </div>
+
+          <!-- English Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              English Name <span class="text-red-400">*</span>
+            </label>
+            <input 
+              type="text" 
+              formControlName="name_en"
+              (blur)="generateKeyFromName()"
+              class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="Enter theme name in English">
+            <div *ngIf="nameEn?.invalid && nameEn?.touched" class="text-red-400 text-sm mt-1">
+              <span *ngIf="nameEn?.errors?.['required']">English name is required</span>
+              <span *ngIf="nameEn?.errors?.['minlength']">English name must be at least 2 characters</span>
+            </div>
+          </div>
+
+          <!-- Theme Key -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Theme Key <span class="text-red-400">*</span>
+            </label>
+            <input 
+              type="text" 
+              formControlName="key"
+              class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white font-mono focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder="theme_key_example">
+            <div *ngIf="key?.invalid && key?.touched" class="text-red-400 text-sm mt-1">
+              <span *ngIf="key?.errors?.['required']">Theme key is required</span>
+              <span *ngIf="key?.errors?.['pattern']">Key must contain only lowercase letters, numbers, underscores, and hyphens</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">Unique identifier for the theme</p>
+          </div>
+
+          <!-- Status -->
+          <div class="flex items-center">
+            <div class="flex items-center h-full">
+              <input 
+                type="checkbox" 
+                formControlName="is_active"
+                id="is_active"
+                class="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2">
+              <label for="is_active" class="ml-3 text-sm font-medium text-gray-300">
+                Active Theme
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descriptions Section -->
+      <div class="border-b border-gray-700 pb-6">
+        <h2 class="text-xl font-semibold text-white mb-4">Descriptions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Arabic Description -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Arabic Description <span class="text-red-400">*</span>
+            </label>
+            <textarea 
+              formControlName="description_ar"
+              rows="4"
+              class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+              placeholder="أدخل وصف الثيم بالعربية (10 أحرف على الأقل)"
+              dir="rtl"></textarea>
+            <div *ngIf="descriptionAr?.invalid && descriptionAr?.touched" class="text-red-400 text-sm mt-1">
+              <span *ngIf="descriptionAr?.errors?.['required']">Arabic description is required</span>
+              <span *ngIf="descriptionAr?.errors?.['minlength']">Description must be at least 10 characters</span>
+            </div>
+          </div>
+
+          <!-- English Description -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              English Description <span class="text-red-400">*</span>
+            </label>
+            <textarea 
+              formControlName="description_en"
+              rows="4"
+              class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+              placeholder="Enter theme description in English (minimum 10 characters)"></textarea>
+            <div *ngIf="descriptionEn?.invalid && descriptionEn?.touched" class="text-red-400 text-sm mt-1">
+              <span *ngIf="descriptionEn?.errors?.['required']">English description is required</span>
+              <span *ngIf="descriptionEn?.errors?.['minlength']">Description must be at least 10 characters</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Media Section -->
+      <div>
+        <h2 class="text-xl font-semibold text-white mb-4">Media & Preview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Theme Image -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Theme Image URL <span class="text-red-400">*</span>
+            </label>
+            <div class="flex">
+              <input 
+                type="url" 
+                formControlName="image"
+                class="flex-1 p-3 bg-gray-700 border border-gray-600 rounded-l-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="https://example.com/theme-image.jpg">
+              <button 
+                type="button"
+                (click)="previewImage()"
+                [disabled]="!image?.value"
+                class="px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-r-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+              </button>
+            </div>
+            <div *ngIf="image?.invalid && image?.touched" class="text-red-400 text-sm mt-1">
+              <span *ngIf="image?.errors?.['required']">Image URL is required</span>
+              <span *ngIf="image?.errors?.['pattern']">Please enter a valid URL starting with http:// or https://</span>
+            </div>
+          </div>
+
+          <!-- Preview URL -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">
+              Preview URL <span class="text-gray-500">(Optional)</span>
+            </label>
+            <div class="flex">
+              <input 
+                type="url" 
+                formControlName="preview_url"
+                class="flex-1 p-3 bg-gray-700 border border-gray-600 rounded-l-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="https://example.com/theme-preview">
+              <button 
+                type="button"
+                (click)="previewTheme()"
+                [disabled]="!previewUrl?.value"
+                class="px-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-r-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+              </button>
+            </div>
+            <div *ngIf="previewUrl?.invalid && previewUrl?.touched" class="text-red-400 text-sm mt-1">
+              <span *ngIf="previewUrl?.errors?.['pattern']">Please enter a valid URL starting with http:// or https://</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">Link to live preview or demo of the theme</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Metadata -->
+      <div class="bg-gray-700 rounded-lg p-4">
+        <h3 class="text-lg font-semibold text-white mb-3">Theme Metadata</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <span class="text-gray-400">Created:</span>
+            <span class="text-white ml-2">{{ theme?.created_at | date:'medium' }}</span>
+          </div>
+          <div>
+            <span class="text-gray-400">Last Updated:</span>
+            <span class="text-white ml-2">{{ theme?.updated_at | date:'medium' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-between pt-6 border-t border-gray-700">
+        <!-- Left side actions -->
+        <div class="flex space-x-3">
+          <button 
+            type="button" 
+            (click)="resetForm()"
+            class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+            Reset Changes
+          </button>
+        </div>
+
+        <!-- Right side actions -->
+        <div class="flex space-x-3">
+          <button 
+            type="button" 
+            (click)="onCancel()"
+            class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+            Cancel
+          </button>
+          
+          <button 
+            type="submit" 
+            [disabled]="themeForm.invalid || isLoading"
+            class="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg transition-colors flex items-center">
+            <svg *ngIf="isLoading" class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span *ngIf="isLoading">Updating Theme...</span>
+            <span *ngIf="!isLoading">Update Theme</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

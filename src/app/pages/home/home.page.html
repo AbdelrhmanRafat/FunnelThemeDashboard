@@ -1,10 +1,96 @@
 <div class="container mx-auto px-4 py-8">
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-    <div *ngFor="let theme of themes$ | async" [routerLink]="['/dashboard', theme.id]" class="bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer">
-      <img [src]="theme.imageUrl" alt="Theme Image" class="w-full h-48 object-cover">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-white">Theme Dashboard</h1>
+    <div class="flex gap-4">
+      <button 
+        routerLink="/add-new-theme"
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Add New Theme
+      </button>
+      <button 
+        routerLink="/theme-list"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+        </svg>
+        Manage Themes
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="bg-red-600 text-white p-4 rounded-lg mb-6">
+    {{ error }}
+    <button (click)="loadThemes()" class="ml-4 underline">Try Again</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+    <p class="text-white mt-4">Loading themes...</p>
+  </div>
+
+  <!-- Themes Grid -->
+  <div *ngIf="!isLoading && !error" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div 
+      *ngFor="let theme of themes" 
+      class="bg-gray-800 rounded-lg shadow-lg overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-200"
+      (click)="onThemeClick(theme)"
+      [routerLink]="['/dashboard', theme.id]">
+      
+      <!-- Theme Image -->
+      <div class="relative">
+        <img 
+          [src]="theme.image" 
+          [alt]="theme.name_en" 
+          class="w-full h-48 object-cover">
+        
+        <!-- Status Badge -->
+        <div class="absolute top-2 right-2">
+          <span 
+            class="px-2 py-1 text-xs rounded-full"
+            [class]="theme.is_active === 1 ? 'bg-green-600 text-white' : 'bg-red-600 text-white'">
+            {{ theme.is_active === 1 ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+
+        <!-- Toggle Button -->
+        <button 
+          (click)="toggleThemeStatus(theme.id, $event)"
+          class="absolute top-2 left-2 p-2 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 transition-all"
+          [title]="theme.is_active === 1 ? 'Deactivate theme' : 'Activate theme'">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Theme Info -->
       <div class="p-4">
-        <h3 class="text-white text-lg font-semibold">{{ theme.title }}</h3>
+        <h3 class="text-white text-lg font-semibold mb-2">{{ theme.name }}</h3>
+        <p class="text-gray-400 text-sm mb-2">{{ theme.description_en }}</p>
+        <div class="flex justify-between items-center">
+          <span class="text-blue-400 text-sm">{{ theme.key }}</span>
+          <span class="text-gray-500 text-xs">
+            {{ theme.updated_at | date:'short' }}
+          </span>
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !error && themes.length === 0" class="text-center py-12">
+    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a4 4 0 004-4V5z"></path>
+    </svg>
+    <h3 class="text-xl font-semibold text-white mb-2">No themes found</h3>
+    <p class="text-gray-400">There are no active themes available at the moment.</p>
   </div>
 </div>

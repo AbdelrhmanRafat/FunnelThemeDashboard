@@ -1,7 +1,7 @@
 {
   "blocks": [
     {
-      "name": "techno_header",
+      "name": "classic_header",
       "data": {
         "title_ar": "اوليفر للملابس",
         "title_en": "Oliver Clothing",
@@ -16,7 +16,7 @@
       }
     },
     {
-      "name": "techno_Image_Text_overlay",
+      "name": "classic_Image_Text_overlay",
       "data": {
         "title_ar": "معلومات عن المنتج",
         "title_en": "Product Information",
@@ -32,7 +32,7 @@
       }
     },
     {
-      "name": "techno_Image_Text_beside",
+      "name": "classic_Image_Text_beside",
       "data": {
         "title_ar": "معلومات عن المنتج",
         "title_en": "Product Information",
@@ -48,7 +48,7 @@
       }
     },
     {
-      "name": "techno_reviews",
+      "name": "classic_reviews",
       "data": {
         "title_ar": "لا تكتفي بكلامنا استمع لتجارب المشترين",
         "title_en": "Don't Just Take Our Word, Listen to Buyers' Experiences",
