@@ -1,256 +1,403 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { delay, map, switchMap, take } from 'rxjs/operators';
-import blocksData from '../mock/blocks.json';
-import { 
-  Block, 
-  BlockData, 
-  CreateBlockRequest, 
-  UpdateBlockRequest, 
-  BlockResponse, 
-  BlocksListResponse,
-  ComponentDefinition,
-  ComponentCategory
-} from "../../models/theme.model";
+import { getFunnelPage } from '../api/funnel.api'; // Your existing API function
+import { AllBlockssessionStorage, Block, BlockData, BlockSessionStorage, FunnelRes, MockBlocks } from '../../models/theme.classic.blocks';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BlocksService {
-  private blocksSubject: BehaviorSubject<Block[]> = new BehaviorSubject<Block[]>([]);
-  public blocks$: Observable<Block[]> = this.blocksSubject.asObservable();
-  private nextId = 1;
+  private blocksSubject: BehaviorSubject<BlockSessionStorage[]> = new BehaviorSubject<BlockSessionStorage[]>([]);
+  public blocks$: Observable<BlockSessionStorage[]> = this.blocksSubject.asObservable();
+  private readonly SESSION_STORAGE_KEY = 'allBlocks';
 
   constructor() {
-    // Initialize with mock data from your JSON
-    this.initializeBlocks();
+    // Initialize from session storage if available
+    this.initializeFromSessionStorage();
   }
 
-  private initializeBlocks(): void {
-    // Use your existing blocks.json data
-    const initialBlocks: Block[] = blocksData.blocks.map((block: any, index: number) => ({
-      id: `block_${index + 1}`,
-      name: block.name,
-      data: block.data,
-      order: index + 1,
-      is_visible: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+  // ===== INITIALIZATION METHODS =====
+
+  private initializeFromSessionStorage(): void {
+    const sessionData = this.getFromSessionStorage();
+    if (sessionData) {
+      this.blocksSubject.next(sessionData.allBlocks);
+    }
+  }
+
+  async initializeBlocksSession(funnelId: number): Promise<AllBlockssessionStorage> {
+    try {
+      // 1. Fetch API data
+      const response = await getFunnelPage(funnelId);
+      const funnelData: FunnelRes = response.data;
+      
+      // 2. Load mock data based on theme key
+      const mockBlocks = await this.loadMockDataByTheme(funnelData.funnel_theme.key);
+      
+      // 3. Initialize session storage with mock data
+      let sessionBlocks = this.transformMockToSessionStorage(mockBlocks, funnelData);
+      
+      // 4. Process API blocks and override/add to session storage
+      sessionBlocks = this.processApiBlocks(funnelData.blocks, sessionBlocks);
+      
+      // 5. Create final structure
+      const allBlocksData: AllBlockssessionStorage = {
+        allBlocks: sessionBlocks
+      };
+      
+      // 6. Save to session storage and update subject
+      this.saveToSessionStorage(allBlocksData);
+      this.blocksSubject.next(sessionBlocks);
+      
+      return allBlocksData;
+    } catch (error) {
+      console.error('Error initializing blocks session:', error);
+      throw error;
+    }
+  }
+
+  // ===== THEME-BASED MOCK DATA LOADING =====
+
+  private async loadMockDataByTheme(themeKey: string): Promise<Block[]> {
+    let mockBlocks: Block[] = [];
+    
+    try {
+      let mockData: MockBlocks;
+      
+      switch (themeKey) {
+        case 'classic':
+          mockData = await import('../mock/classicBlocks.json');
+          break;
+        default:
+          console.warn(`Unknown theme key: ${themeKey}, loading default theme`);
+          mockData = await import('../mock/classicBlocks.json');
+      }
+      
+      // Extract blocks from the imported data
+      const data = mockData;
+      mockBlocks = data.blocks || [];
+      
+      return mockBlocks;
+    } catch (error) {
+      console.error(`Error loading mock data for theme: ${themeKey}`, error);
+      return [];
+    }
+  }
+
+  // ===== DATA TRANSFORMATION METHODS =====
+
+  private transformMockToSessionStorage(
+    mockBlocks: any[], 
+    funnelData: FunnelRes
+  ): BlockSessionStorage[] {
+    return mockBlocks.map((mockBlock) => ({
+      store_id: funnelData.store_id,
+      funnel_id: funnelData.id,
+      key: mockBlock.key,
+      data: mockBlock.data,
+      show: 0 // Mock data starts as hidden
     }));
-
-    this.blocksSubject.next(initialBlocks);
   }
 
-  // ===== BLOCK OPERATIONS =====
+  private processApiBlocks(
+    apiBlocks: Block[], 
+    sessionBlocks: BlockSessionStorage[]
+  ): BlockSessionStorage[] {
+    
+    apiBlocks.forEach((apiBlock) => {
+      // Check if block already exists in session storage
+      const existingBlockIndex = sessionBlocks.findIndex(
+        sessionBlock => sessionBlock.key === apiBlock.key
+      );
+      
+      // Create new session block from API data
+      const newSessionBlock: BlockSessionStorage = {
+        store_id: apiBlock.store_id,
+        funnel_id: apiBlock.funnel_id,
+        key: apiBlock.key,
+        data: apiBlock.data,
+        show: 1 // API blocks are visible
+      };
+      
+      if (existingBlockIndex !== -1) {
+        // Remove existing block
+        sessionBlocks.splice(existingBlockIndex, 1);
+      }
+      
+      // Add new block at the top (beginning of array)
+      sessionBlocks.unshift(newSessionBlock);
+    });
+    
+    return sessionBlocks;
+  }
 
-  getBlocks(): Observable<Block[]> {
+  // ===== SESSION STORAGE OPERATIONS =====
+
+  private saveToSessionStorage(data: AllBlockssessionStorage): void {
+    try {
+      sessionStorage.setItem(this.SESSION_STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+      console.error('Error saving to session storage:', error);
+    }
+  }
+
+  private getFromSessionStorage(): AllBlockssessionStorage | null {
+    try {
+      const data = sessionStorage.getItem(this.SESSION_STORAGE_KEY);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Error reading from session storage:', error);
+      return null;
+    }
+  }
+
+  // ===== REACTIVE BLOCK OPERATIONS (Your existing patterns) =====
+
+  getBlocks(): Observable<BlockSessionStorage[]> {
     return this.blocks$.pipe(delay(200));
   }
 
-  getBlockById(id: string): Observable<Block | undefined> {
+  getBlockByKey(key: string): Observable<BlockSessionStorage | undefined> {
     return this.blocks$.pipe(
-      map(blocks => blocks.find(block => block.id === id)),
+      map(blocks => blocks.find(block => block.key === key)),
       delay(200)
     );
   }
 
-  getBlockByName(name: string): Observable<Block | undefined> {
+  getVisibleBlocks(): Observable<BlockSessionStorage[]> {
     return this.blocks$.pipe(
-      map(blocks => blocks.find(block => block.name === name)),
+      map(blocks => blocks.filter(block => block.show === 1)),
       delay(200)
     );
   }
 
-  
-
-  updateBlock(request: UpdateBlockRequest): Observable<BlockResponse> {
-    const blocks = this.blocksSubject.getValue();
-    const index = blocks.findIndex(block => block.id === request.id);
-    
-    if (index === -1) {
-      return throwError(() => new Error('Block not found'));
-    }
-
-    const updatedBlock: Block = {
-      ...blocks[index],
-      ...(request.name && { name: request.name }),
-      ...(request.data && { data: { ...blocks[index].data, ...request.data } }),
-      ...(request.order !== undefined && { order: request.order }),
-      ...(request.is_visible !== undefined && { is_visible: request.is_visible }),
-      updated_at: new Date().toISOString()
-    };
-
-    blocks[index] = updatedBlock;
-    this.blocksSubject.next(blocks);
-
-    return of({
-      success: true,
-      message: 'Block updated successfully',
-      data: updatedBlock
-    }).pipe(delay(300));
+  getHiddenBlocks(): Observable<BlockSessionStorage[]> {
+    return this.blocks$.pipe(
+      map(blocks => blocks.filter(block => block.show === 0)),
+      delay(200)
+    );
   }
 
-  deleteBlock(id: string): Observable<BlockResponse> {
-    const blocks = this.blocksSubject.getValue();
-    const index = blocks.findIndex(block => block.id === id);
-    
-    if (index === -1) {
-      return throwError(() => new Error('Block not found'));
-    }
+  // ===== CRUD OPERATIONS =====
 
-    blocks.splice(index, 1);
-    this.blocksSubject.next(blocks);
+  updateBlock(key: string, updatedData: Partial<BlockData>): Observable<{ success: boolean; message: string; data?: BlockSessionStorage }> {
+    return this.blocks$.pipe(
+      take(1),
+      map(blocks => {
+        const index = blocks.findIndex(block => block.key === key);
+        
+        if (index === -1) {
+          throw new Error('Block not found');
+        }
 
-    return of({
-      success: true,
-      message: 'Block deleted successfully'
-    }).pipe(delay(300));
+        const updatedBlock: BlockSessionStorage = {
+          ...blocks[index],
+          data: { ...blocks[index].data, ...updatedData }
+        };
+
+        blocks[index] = updatedBlock;
+        
+        // Update session storage
+        const allBlocksData: AllBlockssessionStorage = { allBlocks: blocks };
+        this.saveToSessionStorage(allBlocksData);
+        
+        // Update subject
+        this.blocksSubject.next([...blocks]);
+
+        return {
+          success: true,
+          message: 'Block updated successfully',
+          data: updatedBlock
+        };
+      }),
+      delay(300)
+    );
   }
 
-  toggleBlockVisibility(id: string): Observable<BlockResponse> {
-    const blocks = this.blocksSubject.getValue();
-    const index = blocks.findIndex(block => block.id === id);
-    
-    if (index === -1) {
-      return throwError(() => new Error('Block not found'));
-    }
+  toggleBlockVisibility(key: string): Observable<{ success: boolean; message: string; data?: BlockSessionStorage }> {
+    return this.blocks$.pipe(
+      take(1),
+      map(blocks => {
+        const index = blocks.findIndex(block => block.key === key);
+        
+        if (index === -1) {
+          throw new Error('Block not found');
+        }
 
-    blocks[index].is_visible = !blocks[index].is_visible;
-    blocks[index].updated_at = new Date().toISOString();
-    this.blocksSubject.next(blocks);
+        blocks[index].show = blocks[index].show === 1 ? 0 : 1;
+        
+        // Update session storage
+        const allBlocksData: AllBlockssessionStorage = { allBlocks: blocks };
+        this.saveToSessionStorage(allBlocksData);
+        
+        // Update subject
+        this.blocksSubject.next([...blocks]);
 
-    return of({
-      success: true,
-      message: 'Block visibility updated successfully',
-      data: blocks[index]
-    }).pipe(delay(200));
+        return {
+          success: true,
+          message: 'Block visibility updated successfully',
+          data: blocks[index]
+        };
+      }),
+      delay(200)
+    );
+  }
+
+  // ===== REORDERING OPERATIONS (Adapted from your existing methods) =====
+
+  updateBlockOrder(orderedBlockKeys: string[]): Observable<{ success: boolean; message: string; data?: BlockSessionStorage[] }> {
+    return this.blocks$.pipe(
+      take(1),
+      map(currentBlocks => {
+        // Create a new array with updated order
+        const reorderedBlocks: BlockSessionStorage[] = [];
+        
+        // Add blocks in the new order
+        orderedBlockKeys.forEach((key) => {
+          const block = currentBlocks.find(b => b.key === key);
+          if (block) {
+            reorderedBlocks.push(block);
+          }
+        });
+        
+        // Add any blocks that weren't in the ordered list (safety check)
+        currentBlocks.forEach(block => {
+          if (!orderedBlockKeys.includes(block.key)) {
+            reorderedBlocks.push(block);
+          }
+        });
+        
+        // Update session storage
+        const allBlocksData: AllBlockssessionStorage = { allBlocks: reorderedBlocks };
+        this.saveToSessionStorage(allBlocksData);
+        
+        // Update the subject with new order
+        this.blocksSubject.next(reorderedBlocks);
+        
+        return {
+          success: true,
+          message: 'Block order updated successfully',
+          data: reorderedBlocks
+        };
+      }),
+      delay(200)
+    );
+  }
+
+  moveBlockUp(key: string): Observable<{ success: boolean; message: string }> {
+    return this.blocks$.pipe(
+      take(1),
+      map(blocks => {
+        const currentIndex = blocks.findIndex(block => block.key === key);
+        
+        if (currentIndex <= 0) {
+          throw new Error('Block is already at the top or not found');
+        }
+        
+        // Swap with previous block
+        [blocks[currentIndex - 1], blocks[currentIndex]] = [blocks[currentIndex], blocks[currentIndex - 1]];
+        
+        // Update session storage
+        const allBlocksData: AllBlockssessionStorage = { allBlocks: blocks };
+        this.saveToSessionStorage(allBlocksData);
+        
+        // Update subject
+        this.blocksSubject.next([...blocks]);
+        
+        return {
+          success: true,
+          message: 'Block moved up successfully'
+        };
+      }),
+      delay(200)
+    );
+  }
+
+  moveBlockDown(key: string): Observable<{ success: boolean; message: string }> {
+    return this.blocks$.pipe(
+      take(1),
+      map(blocks => {
+        const currentIndex = blocks.findIndex(block => block.key === key);
+        
+        if (currentIndex === -1 || currentIndex >= blocks.length - 1) {
+          throw new Error('Block is already at the bottom or not found');
+        }
+        
+        // Swap with next block
+        [blocks[currentIndex], blocks[currentIndex + 1]] = [blocks[currentIndex + 1], blocks[currentIndex]];
+        
+        // Update session storage
+        const allBlocksData: AllBlockssessionStorage = { allBlocks: blocks };
+        this.saveToSessionStorage(allBlocksData);
+        
+        // Update subject
+        this.blocksSubject.next([...blocks]);
+        
+        return {
+          success: true,
+          message: 'Block moved down successfully'
+        };
+      }),
+      delay(200)
+    );
   }
 
   // ===== UTILITY METHODS =====
 
-  reorderBlocks(blockOrders: { id: string; order: number }[]): Observable<BlockResponse> {
-    const blocks = this.blocksSubject.getValue();
-    
-    blockOrders.forEach(({ id, order }) => {
-      const block = blocks.find(b => b.id === id);
-      if (block) {
-        block.order = order;
-        block.updated_at = new Date().toISOString();
-      }
-    });
-
-    // Sort blocks by order
-    blocks.sort((a, b) => (a.order || 0) - (b.order || 0));
-    this.blocksSubject.next(blocks);
-
-    return of({
-      success: true,
-      message: 'Blocks reordered successfully'
-    }).pipe(delay(200));
-  }
-
-  searchBlocks(query: string): Observable<Block[]> {
+  searchBlocks(query: string): Observable<BlockSessionStorage[]> {
     return this.blocks$.pipe(
       map(blocks => blocks.filter(block => 
-        block.name.toLowerCase().includes(query.toLowerCase()) ||
-        block.data.title_ar.toLowerCase().includes(query.toLowerCase()) ||
-        block.data.title_en.toLowerCase().includes(query.toLowerCase())
+        block.key.toLowerCase().includes(query.toLowerCase()) ||
+        block.data.title_ar?.toLowerCase().includes(query.toLowerCase()) ||
+        block.data.title_en?.toLowerCase().includes(query.toLowerCase())
       )),
       delay(200)
     );
   }
 
-  // Add this method to your BlocksService class
-
-// Add these methods to your existing BlocksService
-
-
-// Update the order of blocks in mock data
-updateBlockOrder(orderedBlockIds: string[]): Observable<any> {
-  return this.blocks$.pipe(
-    take(1),
-    map(currentBlocks => {
-      // Create a new array with updated order
-      const reorderedBlocks: Block[] = [];
-      
-      // Add blocks in the new order
-      orderedBlockIds.forEach((id, index) => {
-        const block = currentBlocks.find(b => b.id === id);
-        if (block) {
-          reorderedBlocks.push({
-            ...block,
-            order: index
-          });
-        }
-      });
-      
-      // Add any blocks that weren't in the ordered list (shouldn't happen, but safety)
-      currentBlocks.forEach(block => {
-        if (!orderedBlockIds.includes(block.id!)) {
-          reorderedBlocks.push({
-            ...block,
-            order: reorderedBlocks.length
-          });
-        }
-      });
-      
-      // Update the subject with new order
-      this.blocksSubject.next(reorderedBlocks);
-      
-      return {
-        success: true,
-        message: 'Block order updated successfully',
-        data: reorderedBlocks
-      };
-    }),
-    delay(200) // Simulate API delay
-  );
-}
-
-// Alternative method if you prefer to update individual block orders
-updateBlockOrderBatch(blocks: { id: string, order: number }[]): Observable<any> {
-  return this.blocks$.pipe(
-    take(1),
-    map(currentBlocks => {
-      const updatedBlocks = currentBlocks.map(block => {
-        const orderUpdate = blocks.find(b => b.id === block.id);
-        if (orderUpdate) {
+  clearSessionStorage(): Observable<{ success: boolean; message: string }> {
+    return of(null).pipe(
+      map(() => {
+        try {
+          sessionStorage.removeItem(this.SESSION_STORAGE_KEY);
+          this.blocksSubject.next([]);
           return {
-            ...block,
-            order: orderUpdate.order
+            success: true,
+            message: 'Session storage cleared successfully'
           };
+        } catch (error) {
+          throw new Error('Failed to clear session storage');
         }
-        return block;
-      });
-      
-      // Sort by order to maintain consistency
-      updatedBlocks.sort((a, b) => (a.order || 0) - (b.order || 0));
-      
-      this.blocksSubject.next(updatedBlocks);
-      
-      return {
-        success: true,
-        message: 'Block order updated successfully',
-        data: updatedBlocks
-      };
-    }),
-    delay(200)
-  );
-}
+      }),
+      delay(200)
+    );
+  }
 
+  getTotalBlocksCount(): Observable<number> {
+    return this.blocks$.pipe(
+      map(blocks => blocks.length)
+    );
+  }
 
+  getVisibleBlocksCount(): Observable<number> {
+    return this.blocks$.pipe(
+      map(blocks => blocks.filter(block => block.show === 1).length)
+    );
+  }
 
-// If you need to simulate an error for testing
-updateBlockOrderWithError(orderedBlockIds: string[]): Observable<any> {
-  return of(null).pipe(
-    delay(200),
-    switchMap(() => {
-      // Simulate random errors for testing
-      if (Math.random() < 0.2) { // 20% chance of error
-        return throwError(() => new Error('Failed to update block order'));
-      }
-      return this.updateBlockOrder(orderedBlockIds);
-    })
-  );
-}
+  // ===== ERROR SIMULATION (For testing) =====
+
+  updateBlockOrderWithError(orderedBlockKeys: string[]): Observable<any> {
+    return of(null).pipe(
+      delay(200),
+      switchMap(() => {
+        // Simulate random errors for testing
+        if (Math.random() < 0.2) { // 20% chance of error
+          return throwError(() => new Error('Failed to update block order'));
+        }
+        return this.updateBlockOrder(orderedBlockKeys);
+      })
+    );
+  }
 }
