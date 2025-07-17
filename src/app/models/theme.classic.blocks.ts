@@ -3,7 +3,7 @@ export interface Root {
   status: number
   errors: any
   message: string
-  data: any
+  data: FunnelRes
 }
 export interface FunnelRes {
   id: number

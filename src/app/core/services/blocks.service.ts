@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { delay, map, switchMap, take } from 'rxjs/operators';
-import { AllBlockssessionStorage, Block, BlockData, BlockSessionStorage, FunnelRes, MockBlocks } from '../../models/theme.classic.blocks';
+import { AllBlockssessionStorage, Block, BlockData, BlockSessionStorage, FunnelRes, MockBlocks, Root } from '../../models/theme.classic.blocks';
 import { getFunnelPage } from './api.service';
 
 @Injectable({
@@ -30,10 +30,9 @@ export class BlocksService {
     try {
       // 1. Fetch API data
       const response = await getFunnelPage(funnelId);
-      const funnelData: FunnelRes = response;
-       console.log(funnelData);
+      const funnelData : FunnelRes = response.data;
       // 2. Load mock data based on theme key
-      const themeKey = funnelData?.funnel_theme?.key ?? 'classic'; 
+      const themeKey = funnelData.funnel_theme.key ?? 'classic'; 
       const mockBlocks = await this.loadMockDataByTheme(themeKey);
       
       

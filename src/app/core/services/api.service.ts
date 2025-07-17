@@ -1,4 +1,4 @@
-import type { FunnelRes } from '../../models/theme.classic.blocks';
+import type { FunnelRes, Root } from '../../models/theme.classic.blocks';
 
 const baseUrl = "https://backend.dev.baseet.co/api/funnels/";
 
@@ -14,7 +14,7 @@ const headers = {
   'country-code': 'EG'
 };
 
-export async function getFunnelPage(id: number): Promise<FunnelRes> {
+export async function getFunnelPage(id: number): Promise<Root> {
   const res = await fetch(`${baseUrl}${id}`, { headers });
   if (!res.ok) throw new Error("Failed to fetch funnel page");
   return await res.json();
