@@ -1,12 +1,13 @@
 import { Component, inject, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { BlocksService } from '../../core/services/blocks.service';
 import { Block, ComponentDefinition } from '../../models/theme.model';
 
 @Component({
   selector: 'app-block-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DragDropModule],
   templateUrl: './block-sidebar.component.html',
   styleUrl: './block-sidebar.component.scss'
 })
@@ -15,10 +16,13 @@ export class BlockSidebarComponent implements OnInit {
 
   // Input/Output
   @Input() selectedBlockId: string | null = null;
+  @Input() mobileDragDelay: number = 2000; // Set to 2 seconds (2000ms)
   @Output() blockSelected = new EventEmitter<Block>();
   @Output() blockDeleted = new EventEmitter<string>();
   @Output() blockVisibilityToggled = new EventEmitter<Block>();
-  @Output() closeMobileSidebar = new EventEmitter<void>(); // Fixed: Added 'new'
+  @Output() closeMobileSidebar = new EventEmitter<void>();
+  @Output() blocksReordered = new EventEmitter<Block[]>(); // New event for reordering
+  
   // State
   blocks: Block[] = [];
   availableComponents: ComponentDefinition[] = [];
@@ -26,10 +30,15 @@ export class BlockSidebarComponent implements OnInit {
   message = '';
   messageType: 'success' | 'error' = 'success';
 
+  // Drag configuration for mobile
+  dragConfig = {
+    dragStartDelay: 0
+  };
+
   ngOnInit(): void {
-    this.loadBlocks();
-    this.loadAvailableComponents();
-  }
+  this.loadBlocks();
+}
+
 
   loadBlocks(): void {
     this.isLoading = true;
@@ -41,18 +50,6 @@ export class BlockSidebarComponent implements OnInit {
       error: (error) => {
         this.showMessage('Failed to load blocks', 'error');
         this.isLoading = false;
-      }
-    });
-  }
-
-
-  loadAvailableComponents(): void {
-    this.blocksService.getAvailableComponents().subscribe({
-      next: (components) => {
-        this.availableComponents = components;
-      },
-      error: (error) => {
-        console.error('Failed to load components:', error);
       }
     });
   }
@@ -96,6 +93,44 @@ export class BlockSidebarComponent implements OnInit {
     }
   }
 
+  // New method to handle drag and drop
+  onDrop(event: CdkDragDrop<Block[]>): void {
+    if (event.previousIndex !== event.currentIndex) {
+      // Update the local array
+      moveItemInArray(this.blocks, event.previousIndex, event.currentIndex);
+      
+      // Update the order property for each block
+      this.blocks.forEach((block, index) => {
+        block.order = index;
+      });
+
+      // Call the service to update the order on the server
+      this.updateBlockOrder();
+    }
+  }
+
+  private updateBlockOrder(): void {
+    // Create an array of block IDs in their new order
+    const orderedBlockIds = this.blocks.map(block => block.id!);
+    
+    // Call your service to update the order
+    this.blocksService.updateBlockOrder(orderedBlockIds).subscribe({
+      next: (response) => {
+        this.showMessage('Block order updated', 'success');
+        // Update local blocks with the response data if available
+        if (response.data) {
+          this.blocks = response.data;
+        }
+        this.blocksReordered.emit(this.blocks);
+      },
+      error: (error) => {
+        this.showMessage(error.message || 'Failed to update block order', 'error');
+        // Reload blocks to restore the original order
+        this.loadBlocks();
+      }
+    });
+  }
+
   private showMessage(message: string, type: 'success' | 'error'): void {
     this.message = message;
     this.messageType = type;
@@ -105,12 +140,11 @@ export class BlockSidebarComponent implements OnInit {
     }, 3000);
   }
 
-    selectBlock(block: any) {
+  selectBlock(block: any) {
     this.blockSelected.emit(block);
-    this.closeMobileSidebar.emit(); // Emit close event when block is selected
+    this.closeMobileSidebar.emit();
   }
 
-  // Add this method to handle the close button click
   onCloseMobileSidebar() {
     this.closeMobileSidebar.emit();
   }

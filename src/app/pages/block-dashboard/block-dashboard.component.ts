@@ -12,27 +12,14 @@ import { Block, ComponentDefinition } from '../../models/theme.model';
   templateUrl: './block-dashboard.component.html',
   styleUrl: './block-dashboard.component.scss'
 })
-export class BlockDashboardComponent implements OnInit {
+export class BlockDashboardComponent {
   private blocksService = inject(BlocksService);
 
   // State
   selectedBlock: Block | null = null;
   availableComponents: ComponentDefinition[] = [];
 
-  ngOnInit(): void {
-    this.loadAvailableComponents();
-  }
-
-  loadAvailableComponents(): void {
-    this.blocksService.getAvailableComponents().subscribe({
-      next: (components) => {
-        this.availableComponents = components;
-      },
-      error: (error) => {
-        console.error('Failed to load components:', error);
-      }
-    });
-  }
+  
 
   // ===== EVENT HANDLERS =====
 

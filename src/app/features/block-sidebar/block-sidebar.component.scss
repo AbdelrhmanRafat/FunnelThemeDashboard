@@ -1,0 +1,125 @@
+// Drag and Drop Styles
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background: #374151; // gray-700
+  border: 1px solid #4B5563; // gray-600
+  opacity: 0.9;
+  transform: rotate(5deg);
+  transition: transform 0.2s ease;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.5;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list {
+  min-height: 60px;
+
+  &.cdk-drop-list-dragging {
+    .cdk-drag:not(.cdk-drag-placeholder) {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+}
+
+.cdk-drag {
+  position: relative;
+  transition: all 0.2s ease;
+
+  &:hover {
+    .drag-handle {
+      touch-action: none;
+      /* يمنع التفاعل العشوائي */
+      user-select: none;
+    }
+  }
+
+  &.cdk-drag-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.drag-handle {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  cursor: move;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+[cdkDrag] {
+  touch-action: pan-y; // يسمح بسكرول رأسي إلا لو بدأ drag
+}
+
+
+// Mobile touch improvements with long press
+@media (max-width: 1024px) {
+  .cdk-drag {
+
+    // Enable long press to drag on mobile
+    .cdk-drag-handle {
+      touch-action: manipulation; // Allow scrolling but enable long press
+    }
+  }
+
+  .drag-handle {
+    opacity: 1; // Always show on mobile
+    padding: 8px; // Bigger touch target
+  }
+
+  // Add visual feedback for long press
+  .cdk-drag-handle {
+    &:active {
+      background-color: rgba(55, 65, 81, 0.5);
+      border-radius: 4px;
+    }
+  }
+}
+
+// Animation for dropping
+.cdk-drop-list-receiving {
+  .cdk-drag {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+// Improve visual feedback during drag
+.cdk-drag-preview {
+  .drag-handle {
+    opacity: 1;
+  }
+}
+
+// Prevent text selection during drag
+.cdk-drag-dragging {
+  user-select: none;
+}
+
+// Long press indicator for mobile
+@media (max-width: 1024px) {
+  .drag-handle-mobile {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 2px;
+      background: #6B7280;
+      border-radius: 1px;
+      opacity: 0.5;
+    }
+  }
+}

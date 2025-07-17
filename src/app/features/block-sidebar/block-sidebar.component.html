@@ -22,94 +22,144 @@
   </div>
 
   <!-- Messages -->
-  <div *ngIf="message" class="mx-3 lg:mx-4 mt-3 p-2 rounded-md text-sm text-white"
-       [class]="messageType === 'error' ? 'bg-red-600' : 'bg-green-600'">
-    {{ message }}
-  </div>
+  @if (message) {
+    <div class="mx-3 lg:mx-4 mt-3 p-2 rounded-md text-sm text-white"
+         [class]="messageType === 'error' ? 'bg-red-600' : 'bg-green-600'">
+      {{ message }}
+    </div>
+  }
 
   <!-- Loading -->
-  <div *ngIf="isLoading" class="flex-1 flex items-center justify-center p-4">
-    <div class="text-center">
-      <div class="animate-spin h-6 w-6 border-b-2 border-white rounded-full inline-block"></div>
-      <p class="text-gray-400 text-sm mt-2">Loading...</p>
+  @if (isLoading) {
+    <div class="flex-1 flex items-center justify-center p-4">
+      <div class="text-center">
+        <div class="animate-spin h-6 w-6 border-b-2 border-white rounded-full inline-block"></div>
+        <p class="text-gray-400 text-sm mt-2">Loading...</p>
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Blocks List -->
-  <div *ngIf="!isLoading" class="flex-1 p-3 lg:p-4 pb-8 space-y-2">
-    <h2 class="text-white text-sm font-semibold mb-3">Blocks ({{ blocks.length }})</h2>
-
-    <!-- Empty State -->
-    <div *ngIf="blocks.length === 0" class="text-center py-8 text-gray-400 text-sm">
-      <svg class="w-10 h-10 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2" />
-      </svg>
-      No blocks available
-    </div>
-
-    <!-- Block Cards -->
-    <div *ngFor="let block of blocks"
-         (click)="selectBlock(block)"
-         class="p-3 lg:p-3 rounded-lg border cursor-pointer group transition-all touch-manipulation"
-         [class]="selectedBlockId === block.id 
-                    ? 'bg-blue-800 border-blue-600 shadow-md' 
-                    : 'bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-gray-500 active:bg-gray-600'">
-
-      <!-- Block Title -->
-      <div class="flex justify-between items-center mb-2">
-        <h3 class="text-white font-semibold text-sm truncate pr-2">
-          {{ block.data?.title_en || 'Unnamed Block' }}
-        </h3>
-
-        <!-- Status Badge -->
-        <span class="text-xs px-2 py-1 rounded-full flex-shrink-0"
-              [class]="block.is_visible ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'">
-          {{ block.is_visible ? 'Visible' : 'Hidden' }}
-        </span>
-      </div>
-
-      <!-- Arabic Title (if exists) -->
-      <div *ngIf="block.data?.title_ar" class="mb-2">
-        <p class="text-gray-300 text-xs truncate" dir="rtl">
-          {{ block.data.title_ar }}
+  @if (!isLoading) {
+    <div class="flex-1 p-3 lg:p-4 pb-8 space-y-2">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-white text-sm font-semibold">Blocks ({{ blocks.length }})</h2>
+        <!-- Mobile hint -->
+        <p class="lg:hidden text-xs text-gray-500 text-right">
+          Hold & drag to reorder
         </p>
       </div>
 
-      <!-- Actions Row -->
-      <div class="flex justify-between items-center">
-        <!-- Block Info -->
-        <div class="flex items-center gap-2 text-xs text-gray-400">
-          <span *ngIf="block.data?.items?.length">
-            {{ block.data.items.length }} items
-          </span>
-          <span *ngIf="block.data?.icon" class="flex items-center gap-1">
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-            </svg>
-            {{ block.data.icon }}
-          </span>
-        </div>
-
-        <!-- Toggle Visibility Button -->
-        <button 
-          (click)="toggleBlockVisibility(block, $event)" 
-          class="p-2 hover:bg-gray-600 active:bg-gray-500 rounded-lg transition-colors touch-manipulation" 
-          [title]="block.is_visible ? 'Hide Block' : 'Show Block'">
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path *ngIf="block.is_visible" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
-                a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243
-                M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-            <path *ngIf="!block.is_visible" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z 
-                M2.458 12C3.732 7.943 7.523 5 12 5
-                c4.478 0 8.268 2.943 9.542 7
-                -1.274 4.057-5.064 7-9.542 7
-                -4.477 0-8.268-2.943-9.542-7z" />
+      <!-- Empty State -->
+      @if (blocks.length === 0) {
+        <div class="text-center py-8 text-gray-400 text-sm">
+          <svg class="w-10 h-10 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2" />
           </svg>
-        </button>
-      </div>
+          No blocks available
+        </div>
+      }
+
+      <!-- Draggable Block Cards Container -->
+      @if (blocks.length > 0) {
+        <div cdkDropList 
+             (cdkDropListDropped)="onDrop($event)"
+             class="space-y-2">
+          
+          <!-- Block Cards -->
+          @for (block of blocks; track block.id) {
+            <div cdkDrag
+                 [cdkDragStartDelay]="dragConfig.dragStartDelay"
+                 (click)="selectBlock(block)"
+                 class="p-3 lg:p-3 rounded-lg border cursor-pointer group transition-all touch-manipulation"
+                 [class]="selectedBlockId === block.id 
+                            ? 'bg-blue-800 border-blue-600 shadow-md' 
+                            : 'bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-gray-500 active:bg-gray-600'">
+
+              <!-- Drag Handle -->
+              <div cdkDragHandle 
+                   class="flex items-center justify-between mb-2 drag-handle-mobile lg:drag-handle">
+                <div class="flex items-center gap-2">
+                  <!-- Drag Icon with mobile-friendly styling -->
+                  <div class="drag-handle p-1 rounded">
+                    <svg class="w-4 h-4 text-gray-400 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
+                    </svg>
+                  </div>
+                  
+                  <!-- Block Title -->
+                  <h3 class="text-white font-semibold text-sm truncate pr-2">
+                    {{ block.data?.title_en || 'Unnamed Block' }}
+                  </h3>
+                </div>
+
+                <!-- Status Badge -->
+                <span class="text-xs px-2 py-1 rounded-full flex-shrink-0"
+                      [class]="block.is_visible ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'">
+                  {{ block.is_visible ? 'Visible' : 'Hidden' }}
+                </span>
+              </div>
+
+              <!-- Arabic Title (if exists) -->
+              @if (block.data?.title_ar) {
+                <div class="mb-2">
+                  <p class="text-gray-300 text-xs truncate" dir="rtl">
+                    {{ block.data.title_ar }}
+                  </p>
+                </div>
+              }
+
+              <!-- Actions Row -->
+              <div class="flex justify-between items-center">
+                <!-- Block Info -->
+                <div class="flex items-center gap-2 text-xs text-gray-400">
+                  @if (block.data?.items?.length) {
+                    <span>
+                      {{ block.data.items.length }} items
+                    </span>
+                  }
+                  @if (block.data?.icon) {
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                      </svg>
+                      {{ block.data.icon }}
+                    </span>
+                  }
+                </div>
+
+                <!-- Toggle Visibility Button -->
+                <button 
+                  (click)="toggleBlockVisibility(block, $event)" 
+                  class="p-2 hover:bg-gray-600 active:bg-gray-500 rounded-lg transition-colors touch-manipulation" 
+                  [title]="block.is_visible ? 'Hide Block' : 'Show Block'">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    @if (block.is_visible) {
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
+                          a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243
+                          M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                    } @else {
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z 
+                          M2.458 12C3.732 7.943 7.523 5 12 5
+                          c4.478 0 8.268 2.943 9.542 7
+                          -1.274 4.057-5.064 7-9.542 7
+                          -4.477 0-8.268-2.943-9.542-7z" />
+                    }
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Drag Placeholder (shown during drag) -->
+              <div *cdkDragPlaceholder class="bg-gray-600 border-2 border-dashed border-gray-500 rounded-lg p-3 opacity-50">
+                <div class="h-16 bg-gray-500 rounded animate-pulse"></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
     </div>
-  </div>
+  }
 </div>

@@ -14,7 +14,7 @@ import { Block, ComponentDefinition, UpdateBlockRequest } from '../../models/the
 export class BlockDashboardFormComponent implements OnChanges {
   private blocksService = inject(BlocksService);
   private fb = inject(FormBuilder);
-
+  isDev: boolean = false;
   // Input/Output
   @Input() selectedBlock: Block | null = null;
   @Input() availableComponents: ComponentDefinition[] = [];

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { delay, map } from 'rxjs/operators';
+import { delay, map, switchMap, take } from 'rxjs/operators';
 import blocksData from '../mock/blocks.json';
 import { 
   Block, 
@@ -20,102 +20,6 @@ export class BlocksService {
   private blocksSubject: BehaviorSubject<Block[]> = new BehaviorSubject<Block[]>([]);
   public blocks$: Observable<Block[]> = this.blocksSubject.asObservable();
   private nextId = 1;
-
-  // Available component definitions
-  private componentDefinitions: ComponentDefinition[] = [
-    {
-      name: 'classic_header',
-      display_name_en: 'Classic Header',
-      display_name_ar: 'رأس كلاسيكي',
-      category: ComponentCategory.LAYOUT,
-      icon: 'Header',
-      description_en: 'Classic header with logo and title',
-      description_ar: 'رأس كلاسيكي مع الشعار والعنوان',
-      default_data: {
-        title_ar: 'عنوان جديد',
-        title_en: 'New Title',
-        items: [
-          {
-            label: 'logo',
-            content: 'Default content',
-            image: 'assets/default-logo.svg'
-          }
-        ],
-        buttonLabel: ''
-      },
-      is_available: true
-    },
-    {
-      name: 'classic_Image_Text_overlay',
-      display_name_en: 'Image with Text Overlay',
-      display_name_ar: 'صورة مع نص متراكب',
-      category: ComponentCategory.MEDIA,
-      icon: 'Image',
-      description_en: 'Image with overlaid text content',
-      description_ar: 'صورة مع نص متراكب',
-      default_data: {
-        title_ar: 'معلومات عن المنتج',
-        title_en: 'Product Information',
-        icon: 'Images',
-        items: [
-          {
-            label: 'Default label',
-            content: 'Default content',
-            image: 'https://via.placeholder.com/600x400'
-          }
-        ],
-        buttonLabel: ''
-      },
-      is_available: true
-    },
-    {
-      name: 'classic_Image_Text_beside',
-      display_name_en: 'Image with Text Beside',
-      display_name_ar: 'صورة مع نص جانبي',
-      category: ComponentCategory.MEDIA,
-      icon: 'Layout',
-      description_en: 'Image with text content beside it',
-      description_ar: 'صورة مع نص جانبي',
-      default_data: {
-        title_ar: 'معلومات عن المنتج',
-        title_en: 'Product Information',
-        icon: 'Images',
-        items: [
-          {
-            label: 'Default label',
-            content: 'Default content',
-            image: 'https://via.placeholder.com/600x400'
-          }
-        ],
-        buttonLabel: ''
-      },
-      is_available: true
-    },
-    {
-      name: 'classic_reviews',
-      display_name_en: 'Customer Reviews',
-      display_name_ar: 'آراء العملاء',
-      category: ComponentCategory.REVIEWS,
-      icon: 'Star',
-      description_en: 'Customer reviews and testimonials',
-      description_ar: 'آراء العملاء والشهادات',
-      default_data: {
-        title_ar: 'آراء العملاء',
-        title_en: 'Customer Reviews',
-        icon: 'Star',
-        description: 'What our customers say about us',
-        items: [
-          {
-            label: 'Customer Name',
-            content: 'Great product! Highly recommended.',
-            image: 'https://via.placeholder.com/50x50'
-          }
-        ],
-        buttonLabel: ''
-      },
-      is_available: true
-    }
-  ];
 
   constructor() {
     // Initialize with mock data from your JSON
@@ -157,34 +61,7 @@ export class BlocksService {
     );
   }
 
-  createBlock(request: CreateBlockRequest): Observable<BlockResponse> {
-    const blocks = this.blocksSubject.getValue();
-    
-    // Check if component exists
-    const componentDef = this.componentDefinitions.find(def => def.name === request.name);
-    if (!componentDef) {
-      return throwError(() => new Error('Component not found'));
-    }
-
-    const newBlock: Block = {
-      id: `block_${this.nextId++}`,
-      name: request.name,
-      data: request.data,
-      order: request.order || blocks.length + 1,
-      is_visible: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    blocks.push(newBlock);
-    this.blocksSubject.next(blocks);
-
-    return of({
-      success: true,
-      message: 'Block created successfully',
-      data: newBlock
-    }).pipe(delay(300));
-  }
+  
 
   updateBlock(request: UpdateBlockRequest): Observable<BlockResponse> {
     const blocks = this.blocksSubject.getValue();
@@ -249,16 +126,6 @@ export class BlocksService {
     }).pipe(delay(200));
   }
 
-  // ===== COMPONENT OPERATIONS =====
-
-  getAvailableComponents(): Observable<ComponentDefinition[]> {
-    return of(this.componentDefinitions.filter(def => def.is_available)).pipe(delay(200));
-  }
-
-  getComponentByName(name: string): Observable<ComponentDefinition | undefined> {
-    return of(this.componentDefinitions.find(def => def.name === name)).pipe(delay(200));
-  }
-
   // ===== UTILITY METHODS =====
 
   reorderBlocks(blockOrders: { id: string; order: number }[]): Observable<BlockResponse> {
@@ -292,4 +159,98 @@ export class BlocksService {
       delay(200)
     );
   }
+
+  // Add this method to your BlocksService class
+
+// Add these methods to your existing BlocksService
+
+
+// Update the order of blocks in mock data
+updateBlockOrder(orderedBlockIds: string[]): Observable<any> {
+  return this.blocks$.pipe(
+    take(1),
+    map(currentBlocks => {
+      // Create a new array with updated order
+      const reorderedBlocks: Block[] = [];
+      
+      // Add blocks in the new order
+      orderedBlockIds.forEach((id, index) => {
+        const block = currentBlocks.find(b => b.id === id);
+        if (block) {
+          reorderedBlocks.push({
+            ...block,
+            order: index
+          });
+        }
+      });
+      
+      // Add any blocks that weren't in the ordered list (shouldn't happen, but safety)
+      currentBlocks.forEach(block => {
+        if (!orderedBlockIds.includes(block.id!)) {
+          reorderedBlocks.push({
+            ...block,
+            order: reorderedBlocks.length
+          });
+        }
+      });
+      
+      // Update the subject with new order
+      this.blocksSubject.next(reorderedBlocks);
+      
+      return {
+        success: true,
+        message: 'Block order updated successfully',
+        data: reorderedBlocks
+      };
+    }),
+    delay(200) // Simulate API delay
+  );
+}
+
+// Alternative method if you prefer to update individual block orders
+updateBlockOrderBatch(blocks: { id: string, order: number }[]): Observable<any> {
+  return this.blocks$.pipe(
+    take(1),
+    map(currentBlocks => {
+      const updatedBlocks = currentBlocks.map(block => {
+        const orderUpdate = blocks.find(b => b.id === block.id);
+        if (orderUpdate) {
+          return {
+            ...block,
+            order: orderUpdate.order
+          };
+        }
+        return block;
+      });
+      
+      // Sort by order to maintain consistency
+      updatedBlocks.sort((a, b) => (a.order || 0) - (b.order || 0));
+      
+      this.blocksSubject.next(updatedBlocks);
+      
+      return {
+        success: true,
+        message: 'Block order updated successfully',
+        data: updatedBlocks
+      };
+    }),
+    delay(200)
+  );
+}
+
+
+
+// If you need to simulate an error for testing
+updateBlockOrderWithError(orderedBlockIds: string[]): Observable<any> {
+  return of(null).pipe(
+    delay(200),
+    switchMap(() => {
+      // Simulate random errors for testing
+      if (Math.random() < 0.2) { // 20% chance of error
+        return throwError(() => new Error('Failed to update block order'));
+      }
+      return this.updateBlockOrder(orderedBlockIds);
+    })
+  );
+}
 }
