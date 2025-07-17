@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { delay, map, switchMap, take } from 'rxjs/operators';
-import { getFunnelPage } from '../api/funnel.api'; // Your existing API function
 import { AllBlockssessionStorage, Block, BlockData, BlockSessionStorage, FunnelRes, MockBlocks } from '../../models/theme.classic.blocks';
+import { getFunnelPage } from './api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,17 +30,20 @@ export class BlocksService {
     try {
       // 1. Fetch API data
       const response = await getFunnelPage(funnelId);
-      const funnelData: FunnelRes = response.data;
-      
+      const funnelData: FunnelRes = response;
+       console.log(funnelData);
       // 2. Load mock data based on theme key
-      const mockBlocks = await this.loadMockDataByTheme(funnelData.funnel_theme.key);
+      const themeKey = funnelData?.funnel_theme?.key ?? 'classic'; 
+      const mockBlocks = await this.loadMockDataByTheme(themeKey);
+      
       
       // 3. Initialize session storage with mock data
       let sessionBlocks = this.transformMockToSessionStorage(mockBlocks, funnelData);
       
       // 4. Process API blocks and override/add to session storage
-      sessionBlocks = this.processApiBlocks(funnelData.blocks, sessionBlocks);
-      
+      const apiBlocks = funnelData?.blocks ?? []; // fallback to empty array
+      sessionBlocks = this.processApiBlocks(apiBlocks, sessionBlocks);
+            
       // 5. Create final structure
       const allBlocksData: AllBlockssessionStorage = {
         allBlocks: sessionBlocks
@@ -60,30 +63,27 @@ export class BlocksService {
   // ===== THEME-BASED MOCK DATA LOADING =====
 
   private async loadMockDataByTheme(themeKey: string): Promise<Block[]> {
-    let mockBlocks: Block[] = [];
-    
     try {
-      let mockData: MockBlocks;
-      
+      console.log('loadMockDataByTheme called with themeKey:', themeKey);
+      let mockData: any[];
+  
       switch (themeKey) {
         case 'classic':
-          mockData = await import('../mock/classicBlocks.json');
+          console.log('Loading classicBlocks.json...');
+          mockData = (await import('../mock/classicBlocks.json')).default.blocks;
           break;
         default:
           console.warn(`Unknown theme key: ${themeKey}, loading default theme`);
-          mockData = await import('../mock/classicBlocks.json');
+          mockData = (await import('../mock/classicBlocks.json')).default.blocks;
       }
-      
-      // Extract blocks from the imported data
-      const data = mockData;
-      mockBlocks = data.blocks || [];
-      
-      return mockBlocks;
+  
+      console.log('Loaded mock data:', mockData);
+      return mockData;
     } catch (error) {
-      console.error(`Error loading mock data for theme: ${themeKey}`, error);
+      console.error(`❌ Error loading mock data for theme: ${themeKey}`, error);
       return [];
     }
-  }
+  }    
 
   // ===== DATA TRANSFORMATION METHODS =====
 
@@ -142,7 +142,7 @@ export class BlocksService {
     }
   }
 
-  private getFromSessionStorage(): AllBlockssessionStorage | null {
+   getFromSessionStorage(): AllBlockssessionStorage | null {
     try {
       const data = sessionStorage.getItem(this.SESSION_STORAGE_KEY);
       return data ? JSON.parse(data) : null;

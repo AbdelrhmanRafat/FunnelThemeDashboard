@@ -1,25 +1,30 @@
 <div class="flex-1 flex flex-col gap-4">
-  <!-- Preview Iframe Header - Mobile View -->
-<div class="bg-gray-800 border-b border-gray-700 p-4">
-  <!-- Full Width Container -->
-  <div class="w-full max-w-screen-2xl mx-auto rounded-xl overflow-hidden shadow-2xl bg-black">
-    <!-- Iframe Wrapper -->
-    <div class="relative bg-white h-[600px] md:h-[300px]">
-      <iframe 
-        src="https://funnel.baseet.cloud/?f=2&lang=ar/#classic_before_&_after"
-        class="w-full h-full border-0 pointer-events-none"
-        scrolling="no"
-        allowfullscreen
-        loading="lazy">
-      </iframe>
-      <!-- Optional Overlay -->
-      <div class="absolute inset-0 bg-transparent pointer-events-none"></div>
+  <!-- Preview Iframe Header - Dynamic URL -->
+  <div class="bg-gray-800 border-b border-gray-700 p-4">
+    <!-- Full Width Container -->
+    <div class="w-full max-w-screen-2xl mx-auto rounded-xl overflow-hidden shadow-2xl bg-black">
+      <!-- Iframe Wrapper -->
+      <div class="relative bg-white h-[600px] md:h-[300px]">
+        <iframe 
+          [src]="getPreviewUrl()"
+          class="w-full h-full border-0 pointer-events-none"
+          scrolling="no"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+        <!-- Optional Overlay -->
+        <div class="absolute inset-0 bg-transparent pointer-events-none"></div>
+      </div>
+    </div>
+
+    <!-- Label Below with Block Info -->
+    <div class="text-center mt-2">
+      <p class="text-gray-400 text-xs">Preview</p>
+      <p *ngIf="selectedBlock" class="text-gray-500 text-xs">
+        {{ blockKey }} | Store: {{ blockStore }} | Funnel: {{ blockFunnel }}
+      </p>
     </div>
   </div>
-
-  <!-- Label Below -->
-  <p class="text-center text-gray-400 text-xs mt-2">Mobile Preview</p>
-</div>
 
   <!-- Success/Error Messages -->
   <div *ngIf="message" class="p-3 sm:p-4 mx-2 sm:mx-0 rounded-lg" 
@@ -44,9 +49,36 @@
     <div *ngIf="selectedBlock" class="w-full">
       <form [formGroup]="blockForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4 sm:gap-6">
 
+        <!-- Block Header Info -->
+        <div class="bg-gray-800 p-4 sm:p-6 rounded-lg border-l-4 border-blue-500">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 class="text-lg font-semibold text-white">
+                {{ getComponentDisplayName(blockKey) }}
+              </h2>
+              <p class="text-sm text-gray-400">{{ blockKey }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <!-- Visibility Badge -->
+              <span class="text-xs px-3 py-1 rounded-full"
+                    [class]="blockVisible ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'">
+                {{ blockVisible ? 'Visible' : 'Hidden' }}
+              </span>
+              <!-- Toggle Button -->
+              <button 
+                type="button"
+                (click)="toggleBlockVisibility()" 
+                class="px-4 py-2 text-sm rounded-lg transition-colors"
+                [class]="blockVisible ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'">
+                {{ blockVisible ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Basic Information -->
         <div class="bg-gray-800 p-4 sm:p-6 rounded-lg">
-          <h2 class="text-base sm:text-lg font-semibold text-white mb-4">Basic Information</h2>
+          <h3 class="text-base sm:text-lg font-semibold text-white mb-4">Basic Information</h3>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <!-- Arabic Title -->
@@ -60,8 +92,8 @@
                 class="w-full p-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" 
                 placeholder="أدخل العنوان بالعربية" 
                 dir="rtl">
-              <div *ngIf="titleAr?.invalid && titleAr?.touched" class="text-red-400 text-sm mt-1">
-                Arabic title is required
+              <div *ngIf="isFieldInvalid('title_ar')" class="text-red-400 text-sm mt-1">
+                {{ getFieldError('title_ar') }}
               </div>
             </div>
 
@@ -75,8 +107,8 @@
                 formControlName="title_en" 
                 class="w-full p-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" 
                 placeholder="Enter English title">
-              <div *ngIf="titleEn?.invalid && titleEn?.touched" class="text-red-400 text-sm mt-1">
-                English title is required
+              <div *ngIf="isFieldInvalid('title_en')" class="text-red-400 text-sm mt-1">
+                {{ getFieldError('title_en') }}
               </div>
             </div>
 
@@ -115,7 +147,7 @@
         <!-- Items Section -->
         <div class="bg-gray-800 p-4 sm:p-6 rounded-lg">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 sm:gap-0">
-            <h2 class="text-base sm:text-lg font-semibold text-white">Items</h2>
+            <h3 class="text-base sm:text-lg font-semibold text-white">Items ({{ itemsArray.length }})</h3>
             <button 
               type="button" 
               (click)="addItem()" 
@@ -131,7 +163,7 @@
           <div formArrayName="items" class="flex flex-col gap-4">
             <div *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i" class="bg-gray-700 p-3 sm:p-4 border border-gray-600 rounded-lg">
               <div class="flex items-center justify-between mb-4">
-                <h3 class="text-white font-medium text-sm sm:text-base">Item {{ i + 1 }}</h3>
+                <h4 class="text-white font-medium text-sm sm:text-base">Item {{ i + 1 }}</h4>
                 <button 
                   type="button" 
                   (click)="removeItem(i)" 
@@ -142,7 +174,7 @@
                 </button>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="sm:col-span-1">
                   <label class="block text-sm font-medium text-gray-300 mb-2">Label <span class="text-red-400">*</span></label>
                   <input 
@@ -152,12 +184,44 @@
                     placeholder="Item label">
                 </div>
                 <div class="sm:col-span-1">
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Name</label>
+                  <input 
+                    type="text" 
+                    formControlName="name" 
+                    class="w-full p-3 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" 
+                    placeholder="Item name">
+                </div>
+                <div class="sm:col-span-1">
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Number</label>
+                  <input 
+                    type="text" 
+                    formControlName="number" 
+                    class="w-full p-3 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" 
+                    placeholder="Item number">
+                </div>
+                <div class="sm:col-span-1">
                   <label class="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
                   <input 
                     type="url" 
                     formControlName="image" 
                     class="w-full p-3 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" 
                     placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="sm:col-span-1">
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Link</label>
+                  <input 
+                    type="url" 
+                    formControlName="link" 
+                    class="w-full p-3 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" 
+                    placeholder="https://example.com">
+                </div>
+                <div class="sm:col-span-1">
+                  <label class="block text-sm font-medium text-gray-300 mb-2">Icon</label>
+                  <input 
+                    type="text" 
+                    formControlName="icon" 
+                    class="w-full p-3 bg-gray-600 border border-gray-500 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base" 
+                    placeholder="Icon name">
                 </div>
               </div>
 
@@ -184,6 +248,43 @@
               class="bg-green-600 hover:bg-green-700 active:bg-green-800 text-white px-4 py-2 rounded-lg transition-colors touch-manipulation">
               Add First Item
             </button>
+          </div>
+        </div>
+
+        <!-- Advanced Features Info -->
+        <div *ngIf="hasFormInputs || hasPurchaseOptions || hasVideoInfo" class="bg-gray-800 p-4 sm:p-6 rounded-lg">
+          <h3 class="text-base sm:text-lg font-semibold text-white mb-4">Advanced Features</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div *ngIf="hasFormInputs" class="bg-gray-700 p-3 rounded-lg">
+              <h4 class="text-sm font-medium text-white mb-2">Form Inputs</h4>
+              <p class="text-xs text-gray-400">This block has form inputs</p>
+              <button 
+                type="button" 
+                (click)="addFormInput()" 
+                class="mt-2 text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                Edit Forms
+              </button>
+            </div>
+            <div *ngIf="hasPurchaseOptions" class="bg-gray-700 p-3 rounded-lg">
+              <h4 class="text-sm font-medium text-white mb-2">Purchase Options</h4>
+              <p class="text-xs text-gray-400">{{ selectedBlock?.data?.purchase_options?.length }} options</p>
+              <button 
+                type="button" 
+                (click)="addPurchaseOption()" 
+                class="mt-2 text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                Edit Options
+              </button>
+            </div>
+            <div *ngIf="hasVideoInfo" class="bg-gray-700 p-3 rounded-lg">
+              <h4 class="text-sm font-medium text-white mb-2">Video Info</h4>
+              <p class="text-xs text-gray-400">{{ selectedBlock?.data?.videoInfo?.length }} videos</p>
+              <button 
+                type="button" 
+                (click)="addVideoInfo()" 
+                class="mt-2 text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                Edit Videos
+              </button>
+            </div>
           </div>
         </div>
 

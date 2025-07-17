@@ -19,6 +19,13 @@
   <div class="hidden lg:block p-4 border-b border-gray-700 sticky top-0 bg-gray-800 z-10">
     <h1 class="text-lg font-bold text-white">Block Dashboard</h1>
     <p class="text-gray-400 text-xs">Manage your blocks</p>
+    
+    <!-- Block Statistics -->
+    <div class="mt-2 flex gap-4 text-xs">
+      <span class="text-green-400">{{ visibleBlocksCount }} visible</span>
+      <span class="text-red-400">{{ hiddenBlocksCount }} hidden</span>
+      <span class="text-gray-400">{{ totalBlocksCount }} total</span>
+    </div>
   </div>
 
   <!-- Messages -->
@@ -34,7 +41,7 @@
     <div class="flex-1 flex items-center justify-center p-4">
       <div class="text-center">
         <div class="animate-spin h-6 w-6 border-b-2 border-white rounded-full inline-block"></div>
-        <p class="text-gray-400 text-sm mt-2">Loading...</p>
+        <p class="text-gray-400 text-sm mt-2">Loading blocks...</p>
       </div>
     </div>
   }
@@ -42,12 +49,25 @@
   <!-- Blocks List -->
   @if (!isLoading) {
     <div class="flex-1 p-3 lg:p-4 pb-8 space-y-2">
-      <div class="flex justify-between items-center mb-3">
-        <h2 class="text-white text-sm font-semibold">Blocks ({{ blocks.length }})</h2>
-        <!-- Mobile hint -->
-        <p class="lg:hidden text-xs text-gray-500 text-right">
-          Hold & drag to reorder
-        </p>
+      
+      <!-- Controls Section -->
+      <div class="mb-4 space-y-2">
+        <div class="flex justify-between items-center">
+          <h2 class="text-white text-sm font-semibold">All Blocks ({{ blocks.length }})</h2>
+          <!-- Mobile hint -->
+          <p class="lg:hidden text-xs text-gray-500 text-right">
+            Hold & drag to reorder
+          </p>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <button 
+            (click)="clearSession()" 
+            class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-md transition-colors">
+            Clear Session
+          </button>
+        </div>
       </div>
 
       <!-- Empty State -->
@@ -57,7 +77,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2" />
           </svg>
-          No blocks available
+          <p>No blocks available</p>
+          <p class="text-xs mt-1">Initialize session to load blocks</p>
         </div>
       }
 
@@ -68,12 +89,12 @@
              class="space-y-2">
           
           <!-- Block Cards -->
-          @for (block of blocks; track block.id) {
+          @for (block of blocks; track block.key) {
             <div cdkDrag
                  [cdkDragStartDelay]="dragConfig.dragStartDelay"
                  (click)="selectBlock(block)"
                  class="p-3 lg:p-3 rounded-lg border cursor-pointer group transition-all touch-manipulation"
-                 [class]="selectedBlockId === block.id 
+                 [class]="selectedBlockKey === block.key 
                             ? 'bg-blue-800 border-blue-600 shadow-md' 
                             : 'bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-gray-500 active:bg-gray-600'">
 
@@ -90,15 +111,22 @@
                   
                   <!-- Block Title -->
                   <h3 class="text-white font-semibold text-sm truncate pr-2">
-                    {{ block.data?.title_en || 'Unnamed Block' }}
+                    {{ block.data?.title_en || getComponentDisplayName(block.key) }}
                   </h3>
                 </div>
 
                 <!-- Status Badge -->
                 <span class="text-xs px-2 py-1 rounded-full flex-shrink-0"
-                      [class]="block.is_visible ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'">
-                  {{ block.is_visible ? 'Visible' : 'Hidden' }}
+                      [class]="block.show === 1 ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'">
+                  {{ block.show === 1 ? 'Visible' : 'Hidden' }}
                 </span>
+              </div>
+
+              <!-- Block Key (for reference) -->
+              <div class="mb-2">
+                <p class="text-gray-400 text-xs font-mono">
+                  {{ block.key }}
+                </p>
               </div>
 
               <!-- Arabic Title (if exists) -->
@@ -116,7 +144,7 @@
                 <div class="flex items-center gap-2 text-xs text-gray-400">
                   @if (block.data?.items?.length) {
                     <span>
-                      {{ block.data.items.length }} items
+                      {{ block.data.items }} items
                     </span>
                   }
                   @if (block.data?.icon) {
@@ -127,29 +155,57 @@
                       {{ block.data.icon }}
                     </span>
                   }
+                  
+                  <!-- Store and Funnel Info -->
+                  <span class="text-xs">
+                    Store: {{ block.store_id }} | Funnel: {{ block.funnel_id }}
+                  </span>
                 </div>
 
-                <!-- Toggle Visibility Button -->
-                <button 
-                  (click)="toggleBlockVisibility(block, $event)" 
-                  class="p-2 hover:bg-gray-600 active:bg-gray-500 rounded-lg transition-colors touch-manipulation" 
-                  [title]="block.is_visible ? 'Hide Block' : 'Show Block'">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    @if (block.is_visible) {
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
-                          a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243
-                          M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                    } @else {
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z 
-                          M2.458 12C3.732 7.943 7.523 5 12 5
-                          c4.478 0 8.268 2.943 9.542 7
-                          -1.274 4.057-5.064 7-9.542 7
-                          -4.477 0-8.268-2.943-9.542-7z" />
-                    }
-                  </svg>
-                </button>
+                <!-- Action Buttons -->
+                <div class="flex gap-1">
+                  <!-- Move Up Button -->
+                  <button 
+                    (click)="moveBlockUp(block.key, $event)" 
+                    class="p-1 hover:bg-gray-600 active:bg-gray-500 rounded transition-colors touch-manipulation text-gray-400 hover:text-white" 
+                    title="Move Up">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 14l5-5 5 5"></path>
+                    </svg>
+                  </button>
+                  
+                  <!-- Move Down Button -->
+                  <button 
+                    (click)="moveBlockDown(block.key, $event)" 
+                    class="p-1 hover:bg-gray-600 active:bg-gray-500 rounded transition-colors touch-manipulation text-gray-400 hover:text-white" 
+                    title="Move Down">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 10l-5 5-5-5"></path>
+                    </svg>
+                  </button>
+
+                  <!-- Toggle Visibility Button -->
+                  <button 
+                    (click)="toggleBlockVisibility(block, $event)" 
+                    class="p-1 hover:bg-gray-600 active:bg-gray-500 rounded transition-colors touch-manipulation" 
+                    [title]="block.show === 1 ? 'Hide Block' : 'Show Block'">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      @if (block.show === 1) {
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
+                            a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243
+                            M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                      } @else {
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z 
+                            M2.458 12C3.732 7.943 7.523 5 12 5
+                            c4.478 0 8.268 2.943 9.542 7
+                            -1.274 4.057-5.064 7-9.542 7
+                            -4.477 0-8.268-2.943-9.542-7z" />
+                      }
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <!-- Drag Placeholder (shown during drag) -->

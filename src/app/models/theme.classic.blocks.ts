@@ -56,7 +56,7 @@ export interface Block {
 export interface BlockData {
   title_ar?: string
   title_en?: string
-  buttonLabel?: string
+  buttonLabel: string | null | undefined;
   icon?: string
   description?: string
   items?: BlockItem[]
@@ -81,7 +81,7 @@ export interface BlockSessionStorage {
 export interface BlockDataSessionStorage {
   title_ar?: string
   title_en?: string
-  buttonLabel?: string
+  buttonLabel: string | null | undefined;
   icon?: string
   description?: string
   items?: BlockItem[]
