@@ -17,7 +17,7 @@ export class BlockDashboardComponent implements OnInit {
   
   @ViewChild('blockSidebar') blockSidebar!: BlockSidebarComponent;
 
-  // State - Updated types
+  // State
   selectedBlock: BlockSessionStorage | null = null;
   isInitialized = false;
   isInitializing = false;
@@ -29,10 +29,75 @@ export class BlockDashboardComponent implements OnInit {
   // Configuration
   funnelId = 2; // You can make this dynamic or get from route params
   
+  // Reactive properties for template
+  get totalBlocksCount(): number {
+    return this.blocksService.totalCount();
+  }
+  
+  get visibleBlocksCount(): number {
+    return this.blocksService.visibleCount();
+  }
+  
+  get loading(): boolean {
+    return this.blocksService.loading();
+  }
+  
+  get error(): string | null {
+    return this.blocksService.error();
+  }
+  
   async ngOnInit() {
+    await this.initializeBlocksAndLoadData();
   }
 
-  // ===== INITIALIZATION =====
+  private async initializeBlocksAndLoadData(): Promise<void> {
+    try {
+      this.isInitializing = true;
+      this.initializationError = null;
+      
+      // Initialize blocks session with the funnel ID
+      await this.blocksService.initializeBlocksSession(this.funnelId);
+      
+      // Load all blocks using the service method
+      this.blocksService.getBlocks().subscribe({
+        next: (blocks) => {
+          this.isInitialized = true;
+        },
+        error: (error) => {
+          this.initializationError = 'Failed to load blocks data';
+        }
+      });
+      
+    } catch (error) {
+      this.initializationError = 'Failed to initialize blocks session';
+    } finally {
+      this.isInitializing = false;
+    }
+  }
 
- 
+  // Mobile sidebar methods
+  toggleMobileSidebar(): void {
+    this.isMobileSidebarOpen = !this.isMobileSidebarOpen;
+  }
+
+  closeMobileSidebar(): void {
+    this.isMobileSidebarOpen = false;
+  }
+
+  // Block selection handler
+  onBlockSelected(block: BlockSessionStorage): void {
+    this.selectedBlock = block;
+    this.closeMobileSidebar(); // Close mobile sidebar when a block is selected
+  }
+
+  // Retry initialization method
+  async retryInitialization(): Promise<void> {
+    this.blocksService.clearError();
+    await this.initializeBlocksAndLoadData();
+  }
+
+  // Method to clear selection and show all blocks
+  clearSelection(): void {
+    this.selectedBlock = null;
+  }
 }

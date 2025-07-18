@@ -22,22 +22,22 @@
     
     <!-- Block Statistics -->
     <div class="mt-2 flex gap-4 text-xs">
-      <span class="text-green-400">{{ visibleBlocksCount }} visible</span>
-      <span class="text-red-400">{{ hiddenBlocksCount }} hidden</span>
-      <span class="text-gray-400">{{ totalBlocksCount }} total</span>
+      <span class="text-green-400">{{ visibleBlocksCount() }} visible</span>
+      <span class="text-red-400">{{ hiddenBlocksCount() }} hidden</span>
+      <span class="text-gray-400">{{ totalBlocksCount() }} total</span>
     </div>
   </div>
 
   <!-- Messages -->
-  @if (message) {
+  @if (message()) {
     <div class="mx-3 lg:mx-4 mt-3 p-2 rounded-md text-sm text-white"
-         [class]="messageType === 'error' ? 'bg-red-600' : 'bg-green-600'">
-      {{ message }}
+         [class]="messageType() === 'error' ? 'bg-red-600' : 'bg-green-600'">
+      {{ message() }}
     </div>
   }
 
   <!-- Loading -->
-  @if (isLoading) {
+  @if (isLoading()) {
     <div class="flex-1 flex items-center justify-center p-4">
       <div class="text-center">
         <div class="animate-spin h-6 w-6 border-b-2 border-white rounded-full inline-block"></div>
@@ -47,13 +47,13 @@
   }
 
   <!-- Blocks List -->
-  @if (!isLoading) {
+  @if (!isLoading()) {
     <div class="flex-1 p-3 lg:p-4 pb-8 space-y-2">
       
       <!-- Controls Section -->
       <div class="mb-4 space-y-2">
         <div class="flex justify-between items-center">
-          <h2 class="text-white text-sm font-semibold">All Blocks ({{ blocks.length }})</h2>
+          <h2 class="text-white text-sm font-semibold">{{ currentViewTitle() }} ({{ blocks().length }})</h2>
         </div>
         
         <!-- Action Buttons -->
@@ -66,24 +66,42 @@
         </div>
       </div>
 
+      <!-- Selection Info (when a block is selected) -->
+      @if (selectedBlockKey) {
+        <div class="mb-4 p-3 bg-blue-900/30 border border-blue-600/50 rounded-lg">
+          <div class="flex items-center gap-2 text-blue-300 text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="font-medium">{{ selectedBlockKey }} is selected</span>
+          </div>
+          <p class="text-blue-400 text-xs mt-1">This block is being shown in the preview</p>
+        </div>
+      }
+
       <!-- Empty State -->
-      @if (blocks.length === 0) {
+      @if (blocks().length === 0) {
         <div class="text-center py-8 text-gray-400 text-sm">
           <svg class="w-10 h-10 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2" />
           </svg>
-          <p>No blocks available</p>
-          <p class="text-xs mt-1">Initialize session to load blocks</p>
+          @if (selectedBlockKey) {
+            <p>No blocks available</p>
+            <p class="text-xs mt-1">Initialize session to load blocks</p>
+          } @else {
+            <p>No blocks available</p>
+            <p class="text-xs mt-1">Initialize session to load blocks</p>
+          }
         </div>
       }
 
-      <!-- Simple Block Cards Container -->
-      @if (blocks.length > 0) {
+      <!-- Block Cards Container -->
+      @if (blocks().length > 0) {
         <div class="space-y-2">
           
           <!-- Block Cards -->
-          @for (block of blocks; track block.key) {
+          @for (block of blocks(); track block.key) {
             <div
                  (click)="selectBlock(block)"
                  class="p-3 lg:p-4 rounded-lg border cursor-pointer group transition-all hover:shadow-md"

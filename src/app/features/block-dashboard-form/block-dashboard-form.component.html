@@ -1,220 +1,183 @@
 <div class="w-full mx-auto px-1 py-6">
   <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4 md:mb-0">
-      معاينة الـ Blocks
-    </h2>
-    
-    <!-- View Mode Toggle -->
+    <div class="flex flex-col mb-4 md:mb-0">
+      <h2 class="text-3xl font-bold text-gray-800 dark:text-white">معاينة الـ Blocks</h2>
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        {{ getDisplayInfo().title }} ({{ getDisplayInfo().count }} block{{ getDisplayInfo().count !== 1 ? 's' : '' }})
+      </p>
+    </div>
+
     <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
       <button 
         (click)="switchViewMode('desktop')"
-        [class]="selectedViewMode === 'desktop' ? 
+        [ngClass]="selectedViewMode() === 'desktop' ? 
           'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 
           'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
         class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
         Desktop
       </button>
+
       <button 
         (click)="switchViewMode('mobile')"
-        [class]="selectedViewMode === 'mobile' ? 
+        [ngClass]="selectedViewMode() === 'mobile' ? 
           'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 
           'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
         class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
         </svg>
         Mobile
       </button>
     </div>
   </div>
 
-  <!-- Drag and Drop Instructions -->
-  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+  <!-- Indicator -->
+  <div *ngIf="selectedBlock" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
     <div class="flex items-center gap-2 text-blue-700 dark:text-blue-300">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
       </svg>
-      <span class="text-sm font-medium">اسحب الـ blocks لإعادة ترتيبها</span>
+      <span class="text-sm font-medium">عرض Block محدد: {{ selectedBlock.data?.title_en || selectedBlock.key }}</span>
     </div>
   </div>
 
-  <!-- Blocks List with Drag & Drop -->
-  <div 
-    cdkDropList 
-    (cdkDropListDropped)="onDrop($event)"
-    class="flex flex-col gap-6">
-    
-    @for (block of blocks; track block.key) {
-      <div 
-        cdkDrag
-        class="border border-gray-300 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden bg-white dark:bg-gray-900 hover:shadow-xl transition-shadow duration-200">
+  <!-- Block Preview -->
+  <div *ngIf="selectedBlock" class="border border-gray-300 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden bg-white dark:bg-gray-900 hover:shadow-xl transition-shadow duration-200">
+    <div class="bg-gray-100 dark:bg-gray-800 px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="text-blue-500 dark:text-blue-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <h3 class="text-lg font-semibold text-gray-700 dark:text-white">
+            {{ selectedBlock.data?.title_en || selectedBlock.key }}
+          </h3>
+          <span class="text-xs text-blue-600 dark:text-blue-400 font-medium">Selected Block</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+        <span class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          {{ selectedBlock.show === 1 ? 'Visible' : 'Hidden' }}
+        </span>
+        <span class="font-mono text-xs">{{ selectedBlock.key }}</span>
+      </div>
+    </div>
+
+    <div class="p-4 bg-gray-50 dark:bg-gray-800/50">
+      <div [ngClass]="getContainerClasses()">
         
-        <!-- Drag Handle & Block Header -->
-        <div class="bg-gray-100 dark:bg-gray-800 px-4 py-3 flex justify-between items-center">
-          <div class="flex items-center gap-3">
-            <!-- Drag Handle -->
-            <div 
-              cdkDragHandle
-              class="cursor-move text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
-              </svg>
+        <!-- Mobile View -->
+        <div *ngIf="selectedViewMode() === 'mobile'" class="relative">
+          <div class="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl border-8 border-gray-800"
+            style="width: 400px; height: 750px; margin: 0 auto;">
+            <div class="bg-black rounded-[2rem] overflow-hidden relative w-full h-full">
+              <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-900 rounded-b-2xl z-10"></div>
+              <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-800 rounded-full z-20"></div>
+              <div class="relative bg-white overflow-hidden rounded-[1.5rem] w-full h-full pt-8 pb-4 px-2">
+                <iframe
+                  [ngClass]="getIframeClasses()"
+                  [src]="getIframeUrl(selectedBlock.key)"
+                  frameborder="0"
+                  allowfullscreen
+                  loading="lazy"
+                  [title]="'Mobile preview of block ' + selectedBlock.key"
+                  style="width: 100%; height: 100%; border-radius: 12px;">
+                </iframe>
+              </div>
             </div>
-            
-            <h3 class="text-lg font-semibold text-gray-700 dark:text-white">
-              {{ block.data.title_en }}
-            </h3>
+            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center">
+              <div class="w-6 h-6 border-2 border-gray-600 rounded-full"></div>
+            </div>
           </div>
-          
-        </div>
-        
-        <!-- Preview Container -->
-        <div class="p-4 bg-gray-50 dark:bg-gray-800/50">
-          <div [class]="getContainerClasses()">
-            
-            <!-- Mobile Frame (when mobile view is selected) -->
-            @if (selectedViewMode === 'mobile') {
-              <div class="relative">
-                <!-- Mobile Device Frame -->
-                <div class="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl border-8 border-gray-800" style="width: 400px; height: 750px; margin: 0 auto;">
-                  <!-- Screen -->
-                  <div class="bg-black rounded-[2rem] overflow-hidden relative w-full h-full">
-                    <!-- Notch -->
-                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-900 rounded-b-2xl z-10"></div>
-                    <!-- Camera -->
-                    <div class="absolute top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-800 rounded-full z-20"></div>
-                    
-                    <!-- Iframe Container with padding for notch -->
-                    <div class="relative bg-white overflow-hidden rounded-[1.5rem] w-full h-full pt-8 pb-4 px-2">
-                      <iframe
-                        [class]="getIframeClasses()"
-                        [src]="getIframeUrl(block.key)"
-                        frameborder="0"
-                        allowfullscreen
-                        loading="lazy"
-                        [title]="'Mobile preview of block ' + block.key"
-                        style="width: 100%; height: 100%; border-radius: 12px;">
-                      </iframe>
-                    </div>
-                  </div>
-                  
-                  <!-- Home Button -->
-                  <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center">
-                    <div class="w-6 h-6 border-2 border-gray-600 rounded-full"></div>
-                  </div>
-                </div>
-                
-                <!-- Mobile Label -->
-                <div class="text-center mt-4">
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                    </svg>
-                    Mobile View (400×750)
-                  </span>
-                </div>
-              </div>
-            }
-            
-            <!-- Desktop Frame (when desktop view is selected) -->
-            @else {
-              <div class="relative">
-                <!-- Desktop Monitor Frame -->
-                <div class="bg-gray-800 rounded-t-lg p-6 shadow-2xl" style="height: 750px;">
-                  <!-- Monitor Bezel -->
-                  <div class="bg-gray-900 rounded-lg p-4 h-full">
-                    <!-- Browser Chrome -->
-                    <div class="bg-gray-200 dark:bg-gray-700 rounded-t-lg p-3 border-b border-gray-300 dark:border-gray-600">
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                          <!-- Traffic Light Buttons -->
-                          <div class="flex space-x-2">
-                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                          </div>
-                        </div>
-                        <!-- Address Bar -->
-                        <div class="flex-1 mx-4">
-                          <div class="bg-white dark:bg-gray-800 rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600">
-                            🔒 funnel.baseet.cloud
-                          </div>
-                        </div>
-                        <!-- Browser Controls -->
-                        <div class="flex items-center space-x-2">
-                          <div class="w-4 h-4 bg-gray-400 rounded-sm"></div>
-                          <div class="w-4 h-4 bg-gray-400 rounded-sm"></div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Iframe Container -->
-                    <div class="bg-white dark:bg-gray-900 overflow-hidden flex-1" style="height: calc(100% - 60px);">
-                      <iframe
-                        [class]="getIframeClasses()"
-                        [src]="getIframeUrl(block.key)"
-                        frameborder="0"
-                        allowfullscreen
-                        loading="lazy"
-                        [title]="'Desktop preview of block ' + block.key"
-                        style="width: 100%; height: 100%;">
-                      </iframe>
-                    </div>
-                  </div>
-                  
-                  <!-- Monitor Stand -->
-                  <div class="flex justify-center mt-3">
-                    <div class="w-20 h-10 bg-gray-700 rounded-b-lg"></div>
-                  </div>
-                </div>
-                
-                <!-- Desktop Label -->
-                <div class="text-center mt-4">
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    Desktop View (Full Width × 750)
-                  </span>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-        
-        <!-- Drag Preview -->
-        <div *cdkDragPreview class="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl shadow-xl p-4">
-          <div class="flex items-center gap-3">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
-            </svg>
-            <span class="text-lg font-semibold text-gray-700 dark:text-white">
-              Block Key: {{ block.key }}
+          <div class="text-center mt-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              Mobile View (400×750)
             </span>
           </div>
         </div>
-        
-        <!-- Drag Placeholder -->
-        <div *cdkDragPlaceholder class="bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl h-20 flex items-center justify-center">
-          <span class="text-gray-500 dark:text-gray-400 text-sm">إسقط الـ block هنا</span>
+
+        <!-- Desktop View -->
+        <div *ngIf="selectedViewMode() === 'desktop'" class="relative">
+          <div class="bg-gray-800 rounded-t-lg p-6 shadow-2xl" style="height: 750px;">
+            <div class="bg-gray-900 rounded-lg p-4 h-full">
+              <div class="bg-gray-200 dark:bg-gray-700 rounded-t-lg p-3 border-b border-gray-300 dark:border-gray-600">
+                <div class="flex items-center justify-between">
+                  <div class="flex space-x-2">
+                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                  </div>
+                  <div class="flex-1 mx-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600">
+                      🔒 funnel.baseet.cloud
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 bg-gray-400 rounded-sm"></div>
+                    <div class="w-4 h-4 bg-gray-400 rounded-sm"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white dark:bg-gray-900 overflow-hidden flex-1" style="height: calc(100% - 60px);">
+                <iframe
+                  [ngClass]="getIframeClasses()"
+                  [src]="getIframeUrl(selectedBlock.key)"
+                  frameborder="0"
+                  allowfullscreen
+                  loading="lazy"
+                  [title]="'Desktop preview of block ' + selectedBlock.key"
+                  style="width: 100%; height: 100%;">
+                </iframe>
+              </div>
+            </div>
+            <div class="flex justify-center mt-3">
+              <div class="w-20 h-10 bg-gray-700 rounded-b-lg"></div>
+            </div>
+          </div>
+          <div class="text-center mt-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Desktop View (Full Width × 750)
+            </span>
+          </div>
         </div>
       </div>
-    }
-  </div>
-  
-  <!-- Empty State -->
-  @if (blocks.length === 0) {
-    <div class="text-center py-12">
-      <div class="w-24 h-24 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-        <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-        </svg>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">لا توجد blocks</h3>
-      <p class="text-gray-500 dark:text-gray-400">لم يتم العثور على أي blocks لعرضها</p>
     </div>
-  }
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!selectedBlock" class="text-center py-12">
+    <div class="w-24 h-24 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+      <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">لا توجد blocks</h3>
+    <p class="text-gray-500 dark:text-gray-400">لم يتم العثور على أي blocks لعرضها</p>
+  </div>
 </div>
