@@ -1,0 +1,1378 @@
+{
+  "classic_header": {
+    "key": "classic_header",
+    "name": "Header Block",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Logo Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Logo Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Logo Description",
+            "type": "textarea",
+            "value": "content"
+          },
+          {
+            "label": "Logo Image",
+            "type": "image-upload",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_Image_Text_overlay": {
+    "key": "classic_Image_Text_overlay",
+    "name": "Image Text Overlay",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Content Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Title/Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Content",
+            "type": "rich-textarea",
+            "value": "content"
+          },
+          {
+            "label": "Image",
+            "type": "image-upload",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_Image_Text_beside": {
+    "key": "classic_Image_Text_beside",
+    "name": "Image Text Beside",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Content Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Title/Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Content",
+            "type": "rich-textarea",
+            "value": "content"
+          },
+          {
+            "label": "Image",
+            "type": "image-upload",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_reviews": {
+    "key": "classic_reviews",
+    "name": "Reviews Block",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Review Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Customer Name & Location",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Review Content",
+            "type": "rich-textarea",
+            "value": "content"
+          },
+          {
+            "label": "Customer Image",
+            "type": "image-upload",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_form_fields": {
+    "key": "classic_form_fields",
+    "name": "Form Fields Block",
+    "category": "Form",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Form Inputs",
+        "type": "nested-object",
+        "value": "FormInputs",
+        "nestedFields": [
+          {
+            "label": "Full Name Placeholder",
+            "type": "text-input",
+            "value": "full_name"
+          },
+          {
+            "label": "Phone Placeholder",
+            "type": "text-input",
+            "value": "phone"
+          },
+          {
+            "label": "Address Placeholder",
+            "type": "text-input",
+            "value": "address"
+          },
+          {
+            "label": "Cities",
+            "type": "string-array",
+            "value": "cities"
+          },
+          {
+            "label": "Payment Options",
+            "type": "complex-array",
+            "value": "PaymentOptions",
+            "arrayFields": [
+              {
+                "label": "Payment ID",
+                "type": "text-input",
+                "value": "id"
+              },
+              {
+                "label": "Label (Arabic)",
+                "type": "text-input",
+                "value": "label.ar"
+              },
+              {
+                "label": "Label (English)",
+                "type": "text-input",
+                "value": "label.en"
+              },
+              {
+                "label": "Description (Arabic)",
+                "type": "textarea",
+                "value": "description.ar"
+              },
+              {
+                "label": "Description (English)",
+                "type": "textarea",
+                "value": "description.en"
+              },
+              {
+                "label": "Payment Images",
+                "type": "image-array",
+                "value": "images"
+              }
+            ]
+          },
+          {
+            "label": "Delivery Options",
+            "type": "complex-array",
+            "value": "DeliveryOptions",
+            "arrayFields": [
+              {
+                "label": "Delivery ID",
+                "type": "text-input",
+                "value": "id"
+              },
+              {
+                "label": "Label (Arabic)",
+                "type": "text-input",
+                "value": "label.ar"
+              },
+              {
+                "label": "Label (English)",
+                "type": "text-input",
+                "value": "label.en"
+              },
+              {
+                "label": "Description (Arabic)",
+                "type": "textarea",
+                "value": "description.ar"
+              },
+              {
+                "label": "Description (English)",
+                "type": "textarea",
+                "value": "description.en"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "required": true
+      }
+    ]
+  },
+  "classic_text-bar": {
+    "key": "classic_text-bar",
+    "name": "Text Bar",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_countdown": {
+    "key": "classic_countdown",
+    "name": "Countdown Timer",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Time Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Time Unit Name",
+            "type": "select",
+            "value": "name",
+            "options": ["hours", "minutes", "seconds", "days"]
+          },
+          {
+            "label": "Number Value",
+            "type": "number-input",
+            "value": "number"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_today_statistics": {
+    "key": "classic_today_statistics",
+    "name": "Today Statistics",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Statistics Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Statistic Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Number Value",
+            "type": "number-input",
+            "value": "number"
+          },
+          {
+            "label": "Icon",
+            "type": "icon-selector",
+            "value": "icon"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_before_&_after": {
+    "key": "classic_before_&_after",
+    "name": "Before & After",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Before & After Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Type",
+            "type": "select",
+            "value": "name",
+            "options": ["Before", "after"]
+          },
+          {
+            "label": "Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Content",
+            "type": "textarea",
+            "value": "content"
+          },
+          {
+            "label": "Image",
+            "type": "image-upload",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_rates": {
+    "key": "classic_rates",
+    "name": "Product Rating",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Rating Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Rating Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Rating Value",
+            "type": "number-input",
+            "value": "number",
+            "min": 0,
+            "max": 5,
+            "step": 0.1
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_product_funnel": {
+    "key": "classic_product_funnel",
+    "name": "Product Funnel",
+    "category": "Product",
+    "formFields": [
+      {
+        "label": "Product Binding",
+        "type": "product-selector",
+        "value": "product"
+      },
+      {
+        "label": "Purchase Options",
+        "type": "complex-array",
+        "value": "purchase_options",
+        "arrayFields": [
+          {
+            "label": "Option Title",
+            "type": "text-input",
+            "value": "title"
+          },
+          {
+            "label": "Number of Items",
+            "type": "number-input",
+            "value": "items"
+          },
+          {
+            "label": "Price Per Item",
+            "type": "currency-input",
+            "value": "price_per_item"
+          },
+          {
+            "label": "Original Price Per Item",
+            "type": "currency-input",
+            "value": "original_price_per_item"
+          },
+          {
+            "label": "Original Total",
+            "type": "currency-input",
+            "value": "original_total",
+            "readonly": true
+          },
+          {
+            "label": "Total Price",
+            "type": "currency-input",
+            "value": "total_price",
+            "readonly": true
+          },
+          {
+            "label": "Discount Amount",
+            "type": "currency-input",
+            "value": "discount",
+            "readonly": true
+          },
+          {
+            "label": "Discount Percentage",
+            "type": "text-input",
+            "value": "discount_percent",
+            "readonly": true
+          },
+          {
+            "label": "Shipping Price",
+            "type": "currency-input",
+            "value": "shipping_price"
+          },
+          {
+            "label": "Final Total",
+            "type": "currency-input",
+            "value": "final_total",
+            "readonly": true
+          }
+        ]
+      }
+    ]
+  },
+  "classic_footer": {
+    "key": "classic_footer",
+    "name": "Footer Block",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description/Year",
+        "type": "text-input",
+        "value": "description"
+      },
+      {
+        "label": "Footer Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Label/Text",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Icon",
+            "type": "icon-selector",
+            "value": "icon"
+          },
+          {
+            "label": "Link URL",
+            "type": "url-input",
+            "value": "link"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_order_confirmation_notice": {
+    "key": "classic_order_confirmation_notice",
+    "name": "Order Confirmation Notice",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Notice Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Notice Text",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Icon",
+            "type": "icon-selector",
+            "value": "icon"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_faq": {
+    "key": "classic_faq",
+    "name": "FAQ Block",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "FAQ Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Question",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Answer",
+            "type": "rich-textarea",
+            "value": "content"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_product_preview": {
+    "key": "classic_product_preview",
+    "name": "Product Preview Video",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Video Information",
+        "type": "array-manager",
+        "value": "videoInfo",
+        "arrayFields": [
+          {
+            "label": "Video Title",
+            "type": "text-input",
+            "value": "title"
+          },
+          {
+            "label": "Video Subtitle",
+            "type": "text-input",
+            "value": "subtitle"
+          },
+          {
+            "label": "Views Text",
+            "type": "text-input",
+            "value": "viewsText"
+          },
+          {
+            "label": "Views Icon",
+            "type": "icon-selector",
+            "value": "viewsIcon"
+          },
+          {
+            "label": "Video Title Display",
+            "type": "text-input",
+            "value": "videoTitle"
+          },
+          {
+            "label": "Video Link",
+            "type": "url-input",
+            "value": "videoLink"
+          }
+        ]
+      },
+      {
+        "label": "Feature Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Icon",
+            "type": "icon-selector",
+            "value": "icon"
+          },
+          {
+            "label": "Feature Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Feature Content",
+            "type": "textarea",
+            "value": "content"
+          }
+        ]
+      }
+    ]
+  },
+  "classic_product_usage": {
+    "key": "classic_product_usage",
+    "name": "Product Usage Videos",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Usage Videos",
+        "type": "array-manager",
+        "value": "videoInfo",
+        "arrayFields": [
+          {
+            "label": "Video Link",
+            "type": "url-input",
+            "value": "videoLink"
+          },
+          {
+            "label": "Video Title",
+            "type": "text-input",
+            "value": "title"
+          },
+          {
+            "label": "Video Subtitle",
+            "type": "text-input",
+            "value": "subtitle"
+          }
+        ]
+      }
+    ]
+  },
+  "classic_delivery_features": {
+    "key": "classic_delivery_features",
+    "name": "Delivery Features",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Feature Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Feature Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Feature Content",
+            "type": "textarea",
+            "value": "content"
+          },
+          {
+            "label": "Feature Icon",
+            "type": "icon-selector",
+            "value": "icon"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_product_features": {
+    "key": "classic_product_features",
+    "name": "Product Features",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Feature Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Feature Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Feature Icon",
+            "type": "icon-selector",
+            "value": "icon"
+          },
+          {
+            "label": "Feature Content",
+            "type": "textarea",
+            "value": "content"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_Gallery": {
+    "key": "classic_Gallery",
+    "name": "Photo Gallery",
+    "category": "Complex",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Gallery Images",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Image Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Image",
+            "type": "image-upload",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_logos_carousel": {
+    "key": "classic_logos_carousel",
+    "name": "Logos Carousel",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Partner Logos",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Logo Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Logo Image",
+            "type": "image-upload",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_visitors": {
+    "key": "classic_visitors",
+    "name": "Recent Visitors",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Visitor Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Visitor Message",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Visitor Image",
+            "type": "image-upload",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "nullable": true
+      }
+    ]
+  },
+  "classic_order_through_whatsapp": {
+    "key": "classic_order_through_whatsapp",
+    "name": "Order Through WhatsApp",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "WhatsApp Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "WhatsApp Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "WhatsApp Link",
+            "type": "url-input",
+            "value": "link"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "required": true
+      }
+    ]
+  },
+  "classic_button_with_link": {
+    "key": "classic_button_with_link",
+    "name": "Button With Link",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Link Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Link Label",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Link URL",
+            "type": "url-input",
+            "value": "link"
+          }
+        ]
+      }
+    ]
+  },
+  "classic_coupon": {
+    "key": "classic_coupon",
+    "name": "Discount Coupon",
+    "category": "Simple",
+    "formFields": [
+      {
+        "label": "Title (Arabic)",
+        "type": "text-input",
+        "value": "title_ar",
+        "required": true
+      },
+      {
+        "label": "Title (English)",
+        "type": "text-input",
+        "value": "title_en",
+        "required": true
+      },
+      {
+        "label": "Icon",
+        "type": "icon-selector",
+        "value": "icon"
+      },
+      {
+        "label": "Description",
+        "type": "textarea",
+        "value": "description"
+      },
+      {
+        "label": "Coupon Items",
+        "type": "array-manager",
+        "value": "items",
+        "arrayFields": [
+          {
+            "label": "Coupon Code",
+            "type": "text-input",
+            "value": "label"
+          },
+          {
+            "label": "Coupon Description",
+            "type": "text-input",
+            "value": "content"
+          }
+        ]
+      },
+      {
+        "label": "Button Text",
+        "type": "text-input",
+        "value": "buttonLabel",
+        "required": true
+      }
+    ]
+  }
+}
