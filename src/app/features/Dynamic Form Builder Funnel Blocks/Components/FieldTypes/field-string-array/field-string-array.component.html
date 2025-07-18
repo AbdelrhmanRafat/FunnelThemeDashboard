@@ -1,0 +1,106 @@
+<div class="mb-4">
+  <!-- Header with Label and Add Button -->
+  <div class="flex justify-between items-center mb-3">
+    <label class="block text-sm font-medium text-gray-700 dark:text-white">
+      {{ field.label }}
+      @if (field.required && !field.nullable) {
+        <span class="text-red-500">*</span>
+      }
+    </label>
+
+    <button
+      type="button"
+      class="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 ease-in-out"
+      (click)="addItem()"
+      [disabled]="isMaxItemsReached()"
+    >
+      Add Item
+    </button>
+  </div>
+
+  <!-- String Array Items -->
+  @for (control of stringArray.controls; track control; let i = $index) {
+    <div class="flex items-start gap-2 mb-2">
+      <div class="flex-1">
+        <input
+          type="text"
+          [formControl]="$any(control)"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:text-gray-500"
+          [class.border-red-500]="control.invalid && control.touched"
+          [class.focus:ring-red-500]="control.invalid && control.touched"
+          [class.focus:border-red-500]="control.invalid && control.touched"
+          [placeholder]="field.placeholder || 'Item ' + (i + 1)"
+        />
+
+        <!-- Individual Item Errors -->
+        @if (control.invalid && control.touched) {
+          <div class="mt-2 text-sm text-red-600">
+            @if (control.errors?.['required']) {
+              <p><span class="font-semibold">Oh snap!</span> This field is required</p>
+            }
+            @if (control.errors?.['minlength']) {
+              <p>Minimum {{ control.errors?.['minlength'].requiredLength }} characters required</p>
+            }
+            @if (control.errors?.['maxlength']) {
+              <p>Maximum {{ control.errors?.['maxlength'].requiredLength }} characters allowed</p>
+            }
+          </div>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="p-2 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 ease-in-out"
+        (click)="removeItem(i)"
+        [disabled]="isMinItemsReached()"
+        title="Remove Item"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (stringArray.length === 0) {
+    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50">
+      <p class="text-gray-600 font-medium">No items yet</p>
+      <p class="text-gray-500 text-sm mt-1">Click "Add Item" to get started.</p>
+    </div>
+  }
+
+  <!-- Array-Level Validation Errors -->
+  @if (stringArray.invalid && stringArray.touched) {
+    <div class="mt-2 text-sm text-red-600">
+      @if (stringArray.errors?.['required']) {
+        <p>At least one item is required.</p>
+      }
+      @if (stringArray.errors?.['minItems']) {
+        <p>A minimum of {{ stringArray.errors?.['minItems'].requiredItems }} items are required.</p>
+      }
+      @if (stringArray.errors?.['maxItems']) {
+        <p>A maximum of {{ stringArray.errors?.['maxItems'].maxAllowed }} items are allowed.</p>
+      }
+    </div>
+  }
+
+  <!-- Items Count Info -->
+  @if (field.minItems || field.maxItems) {
+    <div class="mt-2 text-xs text-gray-500">
+      Items: {{ stringArray.length }}
+      @if (field.minItems && field.maxItems) {
+        ({{ field.minItems }} - {{ field.maxItems }})
+      } @else if (field.minItems) {
+        (Min: {{ field.minItems }})
+      } @else if (field.maxItems) {
+        (Max: {{ field.maxItems }})
+      }
+    </div>
+  }
+
+  <!-- Help Text -->
+  @if (field.description) {
+    <p class="mt-2 text-sm text-gray-500">{{ field.description }}</p>
+  }
+</div>

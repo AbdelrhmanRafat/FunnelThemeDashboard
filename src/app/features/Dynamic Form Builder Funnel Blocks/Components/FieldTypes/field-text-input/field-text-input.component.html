@@ -13,7 +13,7 @@
     [formControl]="fieldControl"
     [placeholder]="field.placeholder || ''"
     [readonly]="field.readonly"
-    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
+    class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:text-gray-500"
     [class.border-red-500]="fieldControl.invalid && fieldControl.touched"
     [class.focus:ring-red-500]="fieldControl.invalid && fieldControl.touched"
     [class.focus:border-red-500]="fieldControl.invalid && fieldControl.touched"
@@ -21,9 +21,9 @@
 
   <!-- Error Messages -->
   @if (fieldControl.invalid && fieldControl.touched) {
-    <div class="mt-1 text-sm text-red-600">
+    <div class="mt-2 text-sm text-red-600">
       @if (fieldControl.errors?.['required']) {
-        <p>{{ field.label }} is required</p>
+        <p><span class="font-semibold">Oh snap!</span> {{ field.label }} is required</p>
       }
       @if (fieldControl.errors?.['minlength']) {
         <p>Minimum {{ fieldControl.errors?.['minlength'].requiredLength }} characters required</p>
