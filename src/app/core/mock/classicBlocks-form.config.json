@@ -2,39 +2,52 @@
   "classic_header": {
     "key": "classic_header",
     "name": "Header Block",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
-        "label": "Logo Items",
+        "label": "Header Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 1,
         "arrayFields": [
           {
-            "label": "Logo Label",
+            "label": "Header Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "minLength": 2,
+            "maxLength": 30
           },
           {
-            "label": "Logo Description",
+            "label": "Header Description",
             "type": "textarea",
-            "value": "content"
+            "value": "content",
+            "required": true,
+            "maxLength": 200
           },
           {
-            "label": "Logo Image",
+            "label": "Header Image",
             "type": "image-upload",
-            "value": "image"
+            "value": "image",
+            "required": true
           }
         ]
       },
@@ -42,26 +55,30 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_Image_Text_overlay": {
     "key": "classic_Image_Text_overlay",
     "name": "Image Text Overlay",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 80
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 80
       },
       {
         "label": "Icon",
@@ -72,21 +89,30 @@
         "label": "Content Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Title/Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50
           },
           {
             "label": "Content",
             "type": "rich-textarea",
-            "value": "content"
+            "value": "content",
+            "required": true,
+            "maxLength": 1000
           },
           {
             "label": "Image",
             "type": "image-upload",
-            "value": "image"
+            "value": "image",
+            "required": true
           }
         ]
       },
@@ -94,26 +120,30 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_Image_Text_beside": {
     "key": "classic_Image_Text_beside",
     "name": "Image Text Beside",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 80
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 80
       },
       {
         "label": "Icon",
@@ -124,21 +154,30 @@
         "label": "Content Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Title/Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50
           },
           {
             "label": "Content",
             "type": "rich-textarea",
-            "value": "content"
+            "value": "content",
+            "required": true,
+            "maxLength": 1000
           },
           {
             "label": "Image",
             "type": "image-upload",
-            "value": "image"
+            "value": "image",
+            "required": true
           }
         ]
       },
@@ -146,26 +185,30 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_reviews": {
     "key": "classic_reviews",
     "name": "Reviews Block",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 60
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 60
       },
       {
         "label": "Icon",
@@ -175,22 +218,32 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Review Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 20,
         "arrayFields": [
           {
             "label": "Customer Name & Location",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "minLength": 2,
+            "maxLength": 80
           },
           {
             "label": "Review Content",
             "type": "rich-textarea",
-            "value": "content"
+            "value": "content",
+            "required": true,
+            "minLength": 10,
+            "maxLength": 500
           },
           {
             "label": "Customer Image",
@@ -203,26 +256,30 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_form_fields": {
     "key": "classic_form_fields",
     "name": "Form Fields Block",
-    "category": "Form",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -232,7 +289,8 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Form Inputs",
@@ -242,52 +300,70 @@
           {
             "label": "Full Name Placeholder",
             "type": "text-input",
-            "value": "full_name"
+            "value": "full_name",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Phone Placeholder",
             "type": "text-input",
-            "value": "phone"
+            "value": "phone",
+            "required": true,
+            "maxLength": 30
           },
           {
             "label": "Address Placeholder",
             "type": "text-input",
-            "value": "address"
+            "value": "address",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Cities",
             "type": "string-array",
-            "value": "cities"
+            "value": "cities",
+            "required": true,
+            "minItems": 1
           },
           {
             "label": "Payment Options",
             "type": "complex-array",
             "value": "PaymentOptions",
+            "required": true,
+            "minItems": 1,
             "arrayFields": [
               {
                 "label": "Payment ID",
                 "type": "text-input",
-                "value": "id"
+                "value": "id",
+                "required": true,
+                "maxLength": 20
               },
               {
                 "label": "Label (Arabic)",
                 "type": "text-input",
-                "value": "label.ar"
+                "value": "label.ar",
+                "required": true,
+                "maxLength": 30
               },
               {
                 "label": "Label (English)",
                 "type": "text-input",
-                "value": "label.en"
+                "value": "label.en",
+                "required": true,
+                "maxLength": 30
               },
               {
                 "label": "Description (Arabic)",
                 "type": "textarea",
-                "value": "description.ar"
+                "value": "description.ar",
+                "maxLength": 200
               },
               {
                 "label": "Description (English)",
                 "type": "textarea",
-                "value": "description.en"
+                "value": "description.en",
+                "maxLength": 200
               },
               {
                 "label": "Payment Images",
@@ -300,31 +376,41 @@
             "label": "Delivery Options",
             "type": "complex-array",
             "value": "DeliveryOptions",
+            "required": true,
+            "minItems": 1,
             "arrayFields": [
               {
                 "label": "Delivery ID",
                 "type": "text-input",
-                "value": "id"
+                "value": "id",
+                "required": true,
+                "maxLength": 20
               },
               {
                 "label": "Label (Arabic)",
                 "type": "text-input",
-                "value": "label.ar"
+                "value": "label.ar",
+                "required": true,
+                "maxLength": 30
               },
               {
                 "label": "Label (English)",
                 "type": "text-input",
-                "value": "label.en"
+                "value": "label.en",
+                "required": true,
+                "maxLength": 30
               },
               {
                 "label": "Description (Arabic)",
                 "type": "textarea",
-                "value": "description.ar"
+                "value": "description.ar",
+                "maxLength": 200
               },
               {
                 "label": "Description (English)",
                 "type": "textarea",
-                "value": "description.en"
+                "value": "description.en",
+                "maxLength": 200
               }
             ]
           }
@@ -334,26 +420,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "required": true
+        "required": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_text-bar": {
     "key": "classic_text-bar",
     "name": "Text Bar",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -363,32 +454,38 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_countdown": {
     "key": "classic_countdown",
     "name": "Countdown Timer",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -398,23 +495,31 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Time Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 3,
         "arrayFields": [
           {
             "label": "Time Unit Name",
             "type": "select",
             "value": "name",
-            "options": ["hours", "minutes", "seconds", "days"]
+            "required": true,
+            "options": ["hours", "minutes", "seconds"]
           },
           {
             "label": "Number Value",
             "type": "number-input",
-            "value": "number"
+            "value": "number",
+            "required": true,
+            "min": 0,
+            "max": 60
           }
         ]
       },
@@ -422,26 +527,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_today_statistics": {
     "key": "classic_today_statistics",
     "name": "Today Statistics",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -451,22 +561,30 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Statistics Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 3,
         "arrayFields": [
           {
             "label": "Statistic Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Number Value",
             "type": "number-input",
-            "value": "number"
+            "value": "number",
+            "required": true,
+            "min": 0
           },
           {
             "label": "Icon",
@@ -479,26 +597,30 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_before_&_after": {
     "key": "classic_before_&_after",
     "name": "Before & After",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -508,33 +630,43 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Before & After Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 2,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Type",
             "type": "select",
             "value": "name",
+            "required": true,
             "options": ["Before", "after"]
           },
           {
             "label": "Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Content",
             "type": "textarea",
-            "value": "content"
+            "value": "content",
+            "required": true,
+            "maxLength": 300
           },
           {
             "label": "Image",
             "type": "image-upload",
-            "value": "image"
+            "value": "image",
+            "required": true
           }
         ]
       },
@@ -542,26 +674,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_rates": {
     "key": "classic_rates",
     "name": "Product Rating",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -571,22 +708,29 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Rating Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Rating Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Rating Value",
             "type": "number-input",
             "value": "number",
+            "required": true,
             "min": 0,
             "max": 5,
             "step": 0.1
@@ -597,44 +741,49 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_product_funnel": {
     "key": "classic_product_funnel",
     "name": "Product Funnel",
-    "category": "Product",
     "formFields": [
-      {
-        "label": "Product Binding",
-        "type": "product-selector",
-        "value": "product"
-      },
       {
         "label": "Purchase Options",
         "type": "complex-array",
         "value": "purchase_options",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 3,
         "arrayFields": [
           {
             "label": "Option Title",
             "type": "text-input",
-            "value": "title"
+            "value": "title",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Number of Items",
             "type": "number-input",
-            "value": "items"
+            "value": "items",
+            "required": true,
+            "min": 1
           },
           {
             "label": "Price Per Item",
             "type": "currency-input",
-            "value": "price_per_item"
+            "value": "price_per_item",
+            "required": true,
+            "min": 0
           },
           {
             "label": "Original Price Per Item",
             "type": "currency-input",
-            "value": "original_price_per_item"
+            "value": "original_price_per_item",
+            "min": 0
           },
           {
             "label": "Original Total",
@@ -663,7 +812,8 @@
           {
             "label": "Shipping Price",
             "type": "currency-input",
-            "value": "shipping_price"
+            "value": "shipping_price",
+            "min": 0
           },
           {
             "label": "Final Total",
@@ -678,19 +828,22 @@
   "classic_footer": {
     "key": "classic_footer",
     "name": "Footer Block",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -700,17 +853,22 @@
       {
         "label": "Description/Year",
         "type": "text-input",
-        "value": "description"
+        "value": "description",
+        "maxLength": 100
       },
       {
         "label": "Footer Items",
         "type": "array-manager",
         "value": "items",
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Label/Text",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Icon",
@@ -728,26 +886,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_order_confirmation_notice": {
     "key": "classic_order_confirmation_notice",
     "name": "Order Confirmation Notice",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -758,11 +921,16 @@
         "label": "Notice Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 5,
         "arrayFields": [
           {
             "label": "Notice Text",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 100
           },
           {
             "label": "Icon",
@@ -775,26 +943,30 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_faq": {
     "key": "classic_faq",
     "name": "FAQ Block",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -805,16 +977,23 @@
         "label": "FAQ Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 20,
         "arrayFields": [
           {
             "label": "Question",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 200
           },
           {
             "label": "Answer",
             "type": "rich-textarea",
-            "value": "content"
+            "value": "content",
+            "required": true,
+            "maxLength": 1000
           }
         ]
       },
@@ -822,26 +1001,30 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_product_preview": {
     "key": "classic_product_preview",
     "name": "Product Preview Video",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -852,21 +1035,28 @@
         "label": "Video Information",
         "type": "array-manager",
         "value": "videoInfo",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 1,
         "arrayFields": [
           {
             "label": "Video Title",
             "type": "text-input",
-            "value": "title"
+            "value": "title",
+            "required": true,
+            "maxLength": 100
           },
           {
             "label": "Video Subtitle",
             "type": "text-input",
-            "value": "subtitle"
+            "value": "subtitle",
+            "maxLength": 100
           },
           {
             "label": "Views Text",
             "type": "text-input",
-            "value": "viewsText"
+            "value": "viewsText",
+            "maxLength": 50
           },
           {
             "label": "Views Icon",
@@ -876,12 +1066,14 @@
           {
             "label": "Video Title Display",
             "type": "text-input",
-            "value": "videoTitle"
+            "value": "videoTitle",
+            "maxLength": 100
           },
           {
             "label": "Video Link",
             "type": "url-input",
-            "value": "videoLink"
+            "value": "videoLink",
+            "required": true
           }
         ]
       },
@@ -889,6 +1081,8 @@
         "label": "Feature Items",
         "type": "array-manager",
         "value": "items",
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Icon",
@@ -898,12 +1092,15 @@
           {
             "label": "Feature Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Feature Content",
             "type": "textarea",
-            "value": "content"
+            "value": "content",
+            "maxLength": 200
           }
         ]
       }
@@ -912,19 +1109,22 @@
   "classic_product_usage": {
     "key": "classic_product_usage",
     "name": "Product Usage Videos",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -935,21 +1135,28 @@
         "label": "Usage Videos",
         "type": "array-manager",
         "value": "videoInfo",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Video Link",
             "type": "url-input",
-            "value": "videoLink"
+            "value": "videoLink",
+            "required": true
           },
           {
             "label": "Video Title",
             "type": "text-input",
-            "value": "title"
+            "value": "title",
+            "required": true,
+            "maxLength": 100
           },
           {
             "label": "Video Subtitle",
             "type": "text-input",
-            "value": "subtitle"
+            "value": "subtitle",
+            "maxLength": 100
           }
         ]
       }
@@ -958,19 +1165,23 @@
   "classic_delivery_features": {
     "key": "classic_delivery_features",
     "name": "Delivery Features",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -980,22 +1191,29 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Feature Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Feature Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Feature Content",
             "type": "textarea",
-            "value": "content"
+            "value": "content",
+            "maxLength": 200
           },
           {
             "label": "Feature Icon",
@@ -1008,26 +1226,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_product_features": {
     "key": "classic_product_features",
     "name": "Product Features",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -1037,17 +1260,23 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Feature Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Feature Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Feature Icon",
@@ -1057,7 +1286,8 @@
           {
             "label": "Feature Content",
             "type": "textarea",
-            "value": "content"
+            "value": "content",
+            "maxLength": 200
           }
         ]
       },
@@ -1065,26 +1295,30 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_Gallery": {
     "key": "classic_Gallery",
     "name": "Photo Gallery",
-    "category": "Complex",
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -1094,22 +1328,28 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Gallery Images",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 50,
         "arrayFields": [
           {
             "label": "Image Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "maxLength": 50
           },
           {
             "label": "Image",
             "type": "image-upload",
-            "value": "image"
+            "value": "image",
+            "required": true
           }
         ]
       },
@@ -1117,26 +1357,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_logos_carousel": {
     "key": "classic_logos_carousel",
     "name": "Logos Carousel",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -1146,22 +1391,29 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Partner Logos",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 20,
         "arrayFields": [
           {
             "label": "Logo Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Logo Image",
             "type": "image-upload",
-            "value": "image"
+            "value": "image",
+            "required": true
           }
         ]
       },
@@ -1169,26 +1421,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_visitors": {
     "key": "classic_visitors",
     "name": "Recent Visitors",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -1198,22 +1455,29 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Visitor Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Visitor Message",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 100
           },
           {
             "label": "Visitor Image",
             "type": "image-upload",
-            "value": "image"
+            "value": "image",
+            "required": true
           }
         ]
       },
@@ -1221,26 +1485,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "nullable": true
+        "nullable": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_order_through_whatsapp": {
     "key": "classic_order_through_whatsapp",
     "name": "Order Through WhatsApp",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -1250,22 +1519,29 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "WhatsApp Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 5,
         "arrayFields": [
           {
             "label": "WhatsApp Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "WhatsApp Link",
             "type": "url-input",
-            "value": "link"
+            "value": "link",
+            "required": true
           }
         ]
       },
@@ -1273,26 +1549,31 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "required": true
+        "required": true,
+        "maxLength": 30
       }
     ]
   },
   "classic_button_with_link": {
     "key": "classic_button_with_link",
     "name": "Button With Link",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -1302,22 +1583,29 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Link Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 5,
         "arrayFields": [
           {
             "label": "Link Label",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 50
           },
           {
             "label": "Link URL",
             "type": "url-input",
-            "value": "link"
+            "value": "link",
+            "required": true
           }
         ]
       }
@@ -1326,19 +1614,23 @@
   "classic_coupon": {
     "key": "classic_coupon",
     "name": "Discount Coupon",
-    "category": "Simple",
+    
     "formFields": [
       {
         "label": "Title (Arabic)",
         "type": "text-input",
         "value": "title_ar",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Title (English)",
         "type": "text-input",
         "value": "title_en",
-        "required": true
+        "required": true,
+        "minLength": 3,
+        "maxLength": 50
       },
       {
         "label": "Icon",
@@ -1348,22 +1640,29 @@
       {
         "label": "Description",
         "type": "textarea",
-        "value": "description"
+        "value": "description",
+        "maxLength": 300
       },
       {
         "label": "Coupon Items",
         "type": "array-manager",
         "value": "items",
+        "required": true,
+        "minItems": 1,
+        "maxItems": 10,
         "arrayFields": [
           {
             "label": "Coupon Code",
             "type": "text-input",
-            "value": "label"
+            "value": "label",
+            "required": true,
+            "maxLength": 20
           },
           {
             "label": "Coupon Description",
             "type": "text-input",
-            "value": "content"
+            "value": "content",
+            "maxLength": 100
           }
         ]
       },
@@ -1371,7 +1670,8 @@
         "label": "Button Text",
         "type": "text-input",
         "value": "buttonLabel",
-        "required": true
+        "required": true,
+        "maxLength": 30
       }
     ]
   }
