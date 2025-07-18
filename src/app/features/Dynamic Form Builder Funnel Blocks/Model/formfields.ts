@@ -39,6 +39,9 @@ export interface FieldValidation {
   // Array validation
   minItems?: number;
   maxItems?: number;
+
+  //Image array validation
+   maxImages?: number;
   
   // File validation
   allowedFormats?: string[];
