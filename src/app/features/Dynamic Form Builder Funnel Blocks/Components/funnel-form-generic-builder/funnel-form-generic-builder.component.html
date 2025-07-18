@@ -1,1 +1,115 @@
-<p>funnel-form-generic-builder works!</p>
+<!-- Main Form Container -->
+<div class="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+  
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <span class="ml-3 text-gray-600 dark:text-gray-300">Loading form configuration from storage...</span>
+    </div>
+  }
+  
+  <!-- Error State -->
+  @if (errorMessage && !isLoading) {
+    <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+      <div class="flex">
+        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Configuration Error</h3>
+          <p class="mt-1 text-sm text-red-700">{{ errorMessage }}</p>
+        </div>
+      </div>
+    </div>
+  }
+  
+  <!-- Form Content -->
+  @if (currentBlock && !isLoading && !errorMessage) {
+    
+    <!-- Form Header -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+        {{ currentBlock.name }}
+      </h2>
+      <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+        Block Key: <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">{{ blockKey }}</code>
+      </p>
+    </div>
+    
+    <!-- Dynamic Form -->
+    <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" novalidate>
+      
+      <!-- Form Fields Container -->
+      <div class="space-y-6">
+        @for (field of currentBlock.formFields; track field.value) {
+          <app-dynamic-field 
+            [field]="field" 
+            [parentForm]="dynamicForm">
+          </app-dynamic-field>
+        }
+      </div>
+      
+      <!-- Form Actions -->
+      <div class="flex items-center justify-between pt-8 mt-8 border-t border-gray-200 dark:border-gray-600">
+        
+        <!-- Left Side - Form Status -->
+        <div class="flex items-center space-x-4">
+          <!-- Form Validation Status -->
+          <div class="flex items-center">
+            @if (isFormValid) {
+              <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              <span class="ml-2 text-sm text-green-600">Form is valid</span>
+            } @else {
+              <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="ml-2 text-sm text-red-600">Form has errors</span>
+            }
+          </div>
+          
+          <!-- Dirty Status -->
+          @if (isFormDirty) {
+            <span class="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+              Unsaved changes
+            </span>
+          }
+        </div>
+        
+        <!-- Right Side - Action Buttons -->
+        <div class="flex items-center space-x-3">
+          
+          <!-- Reset Button -->
+          <button
+            type="button"
+            (click)="resetForm()"
+            [disabled]="!isFormDirty"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+          >
+            Reset
+          </button>
+          
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            [disabled]="!isFormValid"
+            class="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            @if (isFormValid) {
+              Submit Form
+            } @else {
+              Fix Errors First
+            }
+          </button>
+          
+        </div>
+      </div>
+      
+    </form>
+
+    
+  }
+  
+</div>

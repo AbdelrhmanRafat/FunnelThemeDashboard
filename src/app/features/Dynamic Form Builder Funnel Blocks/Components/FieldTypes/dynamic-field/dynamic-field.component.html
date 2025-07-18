@@ -52,10 +52,10 @@
     
     <!-- IMAGE_ARRAY -->
     @case (FieldType.IMAGE_ARRAY) {
-      <app-field-image-array
+      <app-field-image-array 
         [field]="field" 
-        [parentForm]="parentForm"
-      ></app-field-image-array>
+        [parentForm]="parentForm">
+      </app-field-image-array>
     }
     
     <!-- URL_INPUT -->
@@ -68,11 +68,20 @@
     
     <!-- STRING_ARRAY -->
     @case (FieldType.STRING_ARRAY) {
-      <app-field-string-array
+      <app-field-string-array 
         [field]="field" 
-        [parentForm]="parentForm"
-      ></app-field-string-array>
+        [parentForm]="parentForm">
+      </app-field-string-array>
     }
+    
+    <!-- ARRAY_MANAGER -->
+    @case (FieldType.ARRAY_MANAGER) {
+      <app-field-array-manager 
+        [field]="field" 
+        [parentForm]="parentForm">
+      </app-field-array-manager>
+    }
+    
     
     <!-- Fallback for unknown field types -->
     @default {

@@ -1,15 +1,17 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormField, FieldType } from '../../../Model/formfields';
+import { FieldArrayManagerComponent } from '../field-array-manager/field-array-manager.component';
 import { FieldIconSelectorComponent } from '../field-icon-selector/field-icon-selector.component';
 import { FieldImageArrayComponent } from '../field-image-array-upload/field-image-array-upload.component';
 import { FieldImageUploadComponent } from '../field-image-upload/field-image-upload.component';
 import { FieldNumberInputComponent } from '../field-number-input/field-number-input.component';
 import { FieldSelectComponent } from '../field-select/field-select.component';
+import { FieldStringArrayComponent } from '../field-string-array/field-string-array.component';
 import { FieldTextInputComponent } from '../field-text-input/field-text-input.component';
 import { FieldTextareaComponent } from '../field-textarea/field-textarea.component';
 import { FieldUrlInputComponent } from '../field-url-input/field-url-input.component';
-import { FieldStringArrayComponent } from '../field-string-array/field-string-array.component';
+
 
 
 @Component({
@@ -22,9 +24,10 @@ import { FieldStringArrayComponent } from '../field-string-array/field-string-ar
     FieldSelectComponent,
     FieldIconSelectorComponent,
     FieldImageUploadComponent,
-    FieldUrlInputComponent,
     FieldImageArrayComponent,
-    FieldStringArrayComponent
+    FieldUrlInputComponent,
+    FieldStringArrayComponent,
+    FieldArrayManagerComponent
   ],
   templateUrl: './dynamic-field.component.html'
 })
