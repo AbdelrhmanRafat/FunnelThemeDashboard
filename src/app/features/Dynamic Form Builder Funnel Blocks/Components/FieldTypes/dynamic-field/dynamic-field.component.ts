@@ -26,8 +26,7 @@ import { FieldUrlInputComponent } from '../field-url-input/field-url-input.compo
     FieldImageUploadComponent,
     FieldImageArrayComponent,
     FieldUrlInputComponent,
-    FieldStringArrayComponent,
-    FieldArrayManagerComponent
+    FieldStringArrayComponent
   ],
   templateUrl: './dynamic-field.component.html'
 })

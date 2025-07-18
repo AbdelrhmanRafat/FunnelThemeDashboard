@@ -3,12 +3,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { DynamicFieldComponent } from '../FieldTypes/dynamic-field/dynamic-field.component';
 import { FormBlock, FormConfiguration } from '../../Model/formfields';
+import { FieldArrayManagerComponent } from '../FieldTypes/field-array-manager/field-array-manager.component';
 
 @Component({
   selector: 'app-funnel-form-generic-builder',
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    FieldArrayManagerComponent,
     DynamicFieldComponent
   ],
   templateUrl: './funnel-form-generic-builder.component.html',
@@ -16,8 +18,7 @@ import { FormBlock, FormConfiguration } from '../../Model/formfields';
 })
 export class FunnelFormGenericBuilderComponent implements OnInit {
   @Input() blockKey!: string; // e.g., "classic_header", "classic_reviews"
-  @Input() configPath: string = 'Json/classicBlocks-form.config.json'; // Path to JSON file
-  
+  @Input() configPath: string = 'assets/classic/Json/classicBlocks-form.config.json'; // Remove the leading slash.  
   // Form and data properties
   dynamicForm!: FormGroup;
   currentBlock!: FormBlock;

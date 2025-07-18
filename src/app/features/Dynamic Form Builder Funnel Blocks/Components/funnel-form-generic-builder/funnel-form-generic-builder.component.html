@@ -41,14 +41,25 @@
     <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" novalidate>
       
       <!-- Form Fields Container -->
-      <div class="space-y-6">
-        @for (field of currentBlock.formFields; track field.value) {
-          <app-dynamic-field 
-            [field]="field" 
-            [parentForm]="dynamicForm">
-          </app-dynamic-field>
-        }
-      </div>
+<div class="space-y-6">
+  @for (field of currentBlock.formFields; track field.value) {
+    
+    <!-- Handle ARRAY_MANAGER separately -->
+    @if (field.type === 'array-manager') {
+      <app-field-array-manager 
+        [field]="field" 
+        [parentForm]="dynamicForm">
+      </app-field-array-manager>
+    } @else {
+      <!-- All other field types go through dynamic-field -->
+      <app-dynamic-field 
+        [field]="field" 
+        [parentForm]="dynamicForm">
+      </app-dynamic-field>
+    }
+    
+  }
+</div>
       
       <!-- Form Actions -->
       <div class="flex items-center justify-between pt-8 mt-8 border-t border-gray-200 dark:border-gray-600">

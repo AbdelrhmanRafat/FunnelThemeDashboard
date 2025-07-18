@@ -1,100 +1,72 @@
 <!-- Dynamic Field Type Renderer -->
 <div class="dynamic-field-wrapper">
-  
+
   <!-- TEXT_INPUT -->
   @switch (field.type) {
-    @case (FieldType.TEXT_INPUT) {
-      <app-field-text-input 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-text-input>
-    }
-    
-    <!-- TEXTAREA -->
-    @case (FieldType.TEXTAREA) {
-      <app-field-textarea 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-textarea>
-    }
-    
-    <!-- NUMBER_INPUT -->
-    @case (FieldType.NUMBER_INPUT) {
-      <app-field-number-input 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-number-input>
-    }
-    
-    <!-- SELECT -->
-    @case (FieldType.SELECT) {
-      <app-field-select 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-select>
-    }
-    
-    <!-- ICON_SELECTOR -->
-    @case (FieldType.ICON_SELECTOR) {
-      <app-field-icon-selector 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-icon-selector>
-    }
-    
-    <!-- IMAGE_UPLOAD -->
-    @case (FieldType.IMAGE_UPLOAD) {
-      <app-field-image-upload 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-image-upload>
-    }
-    
-    <!-- IMAGE_ARRAY -->
-    @case (FieldType.IMAGE_ARRAY) {
-      <app-field-image-array 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-image-array>
-    }
-    
-    <!-- URL_INPUT -->
-    @case (FieldType.URL_INPUT) {
-      <app-field-url-input 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-url-input>
-    }
-    
-    <!-- STRING_ARRAY -->
-    @case (FieldType.STRING_ARRAY) {
-      <app-field-string-array 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-string-array>
-    }
-    
-    <!-- ARRAY_MANAGER -->
-    @case (FieldType.ARRAY_MANAGER) {
-      <app-field-array-manager 
-        [field]="field" 
-        [parentForm]="parentForm">
-      </app-field-array-manager>
-    }
-    
-    
-    <!-- Fallback for unknown field types -->
-    @default {
-      <div class="p-4 bg-red-50 border border-red-200 rounded-md">
-        <p class="text-red-700 font-medium">Unknown Field Type</p>
-        <p class="text-red-600 text-sm">
-          Field type "{{ field.type }}" is not supported yet.
-        </p>
-        <p class="text-red-500 text-xs mt-1">
-          Field: {{ field.label }} ({{ field.value }})
-        </p>
-      </div>
-    }
+  @case (FieldType.TEXT_INPUT) {
+  <app-field-text-input [field]="field" [parentForm]="parentForm">
+  </app-field-text-input>
   }
-  
+
+  <!-- TEXTAREA -->
+  @case (FieldType.TEXTAREA) {
+  <app-field-textarea [field]="field" [parentForm]="parentForm">
+  </app-field-textarea>
+  }
+
+  <!-- NUMBER_INPUT -->
+  @case (FieldType.NUMBER_INPUT) {
+  <app-field-number-input [field]="field" [parentForm]="parentForm">
+  </app-field-number-input>
+  }
+
+  <!-- SELECT -->
+  @case (FieldType.SELECT) {
+  <app-field-select [field]="field" [parentForm]="parentForm">
+  </app-field-select>
+  }
+
+  <!-- ICON_SELECTOR -->
+  @case (FieldType.ICON_SELECTOR) {
+  <app-field-icon-selector [field]="field" [parentForm]="parentForm">
+  </app-field-icon-selector>
+  }
+
+  <!-- IMAGE_UPLOAD -->
+  @case (FieldType.IMAGE_UPLOAD) {
+  <app-field-image-upload [field]="field" [parentForm]="parentForm">
+  </app-field-image-upload>
+  }
+
+  <!-- IMAGE_ARRAY -->
+  @case (FieldType.IMAGE_ARRAY) {
+  <app-field-image-array [field]="field" [parentForm]="parentForm">
+  </app-field-image-array>
+  }
+
+  <!-- URL_INPUT -->
+  @case (FieldType.URL_INPUT) {
+  <app-field-url-input [field]="field" [parentForm]="parentForm">
+  </app-field-url-input>
+  }
+
+  <!-- STRING_ARRAY -->
+  @case (FieldType.STRING_ARRAY) {
+  <app-field-string-array [field]="field" [parentForm]="parentForm">
+  </app-field-string-array>
+  }
+  <!-- Fallback for unknown field types -->
+  @default {
+  <div class="p-4 bg-red-50 border border-red-200 rounded-md">
+    <p class="text-red-700 font-medium">Unknown Field Type</p>
+    <p class="text-red-600 text-sm">
+      Field type "{{ field.type }}" is not supported yet.
+    </p>
+    <p class="text-red-500 text-xs mt-1">
+      Field: {{ field.label }} ({{ field.value }})
+    </p>
+  </div>
+  }
+  }
+
 </div>
