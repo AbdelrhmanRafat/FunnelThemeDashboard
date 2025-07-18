@@ -1,125 +1,144 @@
-// Drag and Drop Styles
-.cdk-drag-preview {
-  box-sizing: border-box;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  background: #374151; // gray-700
-  border: 1px solid #4B5563; // gray-600
-  opacity: 0.9;
-  transform: rotate(5deg);
-  transition: transform 0.2s ease;
-}
+// Simple sidebar styles without drag and drop functionality
 
-.cdk-drag-placeholder {
-  opacity: 0.5;
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.cdk-drop-list {
-  min-height: 60px;
-
-  &.cdk-drop-list-dragging {
-    .cdk-drag:not(.cdk-drag-placeholder) {
-      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-    }
-  }
-}
-
-.cdk-drag {
-  position: relative;
-  transition: all 0.2s ease;
-
+// Block card hover effects
+.block-card {
+  transition: all 0.2s ease-in-out;
+  
   &:hover {
-    .drag-handle {
-      touch-action: none;
-      /* يمنع التفاعل العشوائي */
-      user-select: none;
-    }
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
-
-  &.cdk-drag-disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+  
+  &:active {
+    transform: translateY(0);
   }
 }
 
-.drag-handle {
-  opacity: 0.6;
+// Selection indicator animation
+.selection-indicator {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Status badge styling
+.status-badge {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  
+  &.visible {
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+  }
+  
+  &.hidden {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+  }
+}
+
+// Block info icons
+.block-info-icon {
+  flex-shrink: 0;
+  opacity: 0.7;
   transition: opacity 0.2s ease;
-  cursor: move;
-
-  &:hover {
+  
+  .block-card:hover & {
     opacity: 1;
   }
 }
-[cdkDrag] {
-  touch-action: pan-y; // يسمح بسكرول رأسي إلا لو بدأ drag
-}
 
-
-// Mobile touch improvements with long press
+// Mobile responsive adjustments
 @media (max-width: 1024px) {
-  .cdk-drag {
-
-    // Enable long press to drag on mobile
-    .cdk-drag-handle {
-      touch-action: manipulation; // Allow scrolling but enable long press
+  .block-card {
+    padding: 12px;
+    
+    &:hover {
+      transform: none; // Disable hover transforms on mobile
     }
-  }
-
-  .drag-handle {
-    opacity: 1; // Always show on mobile
-    padding: 8px; // Bigger touch target
-  }
-
-  // Add visual feedback for long press
-  .cdk-drag-handle {
+    
     &:active {
-      background-color: rgba(55, 65, 81, 0.5);
-      border-radius: 4px;
+      background-color: rgba(55, 65, 81, 0.8) !important;
+    }
+  }
+  
+  .block-title {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  .block-info {
+    font-size: 11px;
+  }
+}
+
+// Scrollbar styling for sidebar
+.sidebar-container {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #374151;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #374151;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #6b7280;
     }
   }
 }
 
-// Animation for dropping
-.cdk-drop-list-receiving {
-  .cdk-drag {
-    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+// Loading state
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
-// Improve visual feedback during drag
-.cdk-drag-preview {
-  .drag-handle {
+// Message styling
+.message {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-// Prevent text selection during drag
-.cdk-drag-dragging {
-  user-select: none;
-}
-
-// Long press indicator for mobile
-@media (max-width: 1024px) {
-  .drag-handle-mobile {
-    position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 12px;
-      height: 2px;
-      background: #6B7280;
-      border-radius: 1px;
-      opacity: 0.5;
-    }
+// Empty state styling
+.empty-state {
+  animation: fadeIn 0.5s ease-in-out;
+  
+  svg {
+    opacity: 0.5;
   }
 }

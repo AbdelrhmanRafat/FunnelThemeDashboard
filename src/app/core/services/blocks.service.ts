@@ -125,7 +125,7 @@ export class BlocksService {
       }
       
       // Add new block at the top (beginning of array)
-      sessionBlocks.unshift(newSessionBlock);
+      sessionBlocks.push(newSessionBlock);
     });
     
     return sessionBlocks;

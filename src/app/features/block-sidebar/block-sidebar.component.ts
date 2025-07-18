@@ -1,13 +1,12 @@
 import { Component, inject, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { BlocksService } from '../../core/services/blocks.service';
 import { BlockSessionStorage } from '../../models/theme.classic.blocks';
 
 @Component({
   selector: 'app-block-sidebar',
   standalone: true,
-  imports: [CommonModule, DragDropModule],
+  imports: [CommonModule],
   templateUrl: './block-sidebar.component.html',
   styleUrl: './block-sidebar.component.scss'
 })
@@ -15,24 +14,15 @@ export class BlockSidebarComponent implements OnInit {
   private blocksService = inject(BlocksService);
 
   // Input/Output
-  @Input() selectedBlockKey: string | null = null; // Changed from selectedBlockId to selectedBlockKey
-  @Input() mobileDragDelay: number = 2000; // Set to 2 seconds (2000ms)
+  @Input() selectedBlockKey: string | null = null;
   @Output() blockSelected = new EventEmitter<BlockSessionStorage>();
-  @Output() blockDeleted = new EventEmitter<string>();
-  @Output() blockVisibilityToggled = new EventEmitter<BlockSessionStorage>();
   @Output() closeMobileSidebar = new EventEmitter<void>();
-  @Output() blocksReordered = new EventEmitter<BlockSessionStorage[]>(); // Updated type
   
   // State
-  blocks: BlockSessionStorage[] = []; // Updated type
+  blocks: BlockSessionStorage[] = [];
   isLoading = false;
   message = '';
   messageType: 'success' | 'error' = 'success';
-
-  // Drag configuration for mobile
-  dragConfig = {
-    dragStartDelay: 0
-  };
 
   ngOnInit(): void {
     this.loadBlocks();
@@ -70,87 +60,6 @@ export class BlockSidebarComponent implements OnInit {
       .split('_')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
-  }
-
-  toggleBlockVisibility(block: BlockSessionStorage, event: Event): void {
-    event.stopPropagation();
-    
-    this.blocksService.toggleBlockVisibility(block.key).subscribe({
-      next: (response) => {
-        this.showMessage('Block visibility updated', 'success');
-        this.loadBlocks();
-        this.blockVisibilityToggled.emit(response.data!);
-      },
-      error: (error) => {
-        this.showMessage(error.message || 'Failed to update visibility', 'error');
-      }
-    });
-  }
-
-  // Note: No delete functionality as per requirements (only editing)
-  // deleteBlock method removed since there are no "create" operations
-
-  // Updated method to handle drag and drop with keys
-  onDrop(event: CdkDragDrop<BlockSessionStorage[]>): void {
-    if (event.previousIndex !== event.currentIndex) {
-      // Update the local array
-      moveItemInArray(this.blocks, event.previousIndex, event.currentIndex);
-      
-      // Call the service to update the order
-      this.updateBlockOrder();
-    }
-  }
-
-  private updateBlockOrder(): void {
-    // Create an array of block keys in their new order
-    const orderedBlockKeys = this.blocks.map(block => block.key);
-    
-    // Call your service to update the order
-    this.blocksService.updateBlockOrder(orderedBlockKeys).subscribe({
-      next: (response) => {
-        this.showMessage('Block order updated', 'success');
-        // Update local blocks with the response data if available
-        if (response.data) {
-          this.blocks = response.data;
-        }
-        this.blocksReordered.emit(this.blocks);
-      },
-      error: (error) => {
-        this.showMessage(error.message || 'Failed to update block order', 'error');
-        // Reload blocks to restore the original order
-        this.loadBlocks();
-      }
-    });
-  }
-
-  // Move block up in order
-  moveBlockUp(blockKey: string, event: Event): void {
-    event.stopPropagation();
-    
-    this.blocksService.moveBlockUp(blockKey).subscribe({
-      next: (response) => {
-        this.showMessage('Block moved up', 'success');
-        this.loadBlocks();
-      },
-      error: (error) => {
-        this.showMessage(error.message || 'Cannot move block up', 'error');
-      }
-    });
-  }
-
-  // Move block down in order
-  moveBlockDown(blockKey: string, event: Event): void {
-    event.stopPropagation();
-    
-    this.blocksService.moveBlockDown(blockKey).subscribe({
-      next: (response) => {
-        this.showMessage('Block moved down', 'success');
-        this.loadBlocks();
-      },
-      error: (error) => {
-        this.showMessage(error.message || 'Cannot move block down', 'error');
-      }
-    });
   }
 
   // Get visible blocks for display
