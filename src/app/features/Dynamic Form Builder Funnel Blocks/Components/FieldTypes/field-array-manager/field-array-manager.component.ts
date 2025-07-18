@@ -8,7 +8,7 @@ import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component'
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    DynamicFieldComponent  // This is key - allows nested dynamic fields
+    DynamicFieldComponent
   ],
   template: `
     <div class="mb-4">
@@ -23,9 +23,13 @@ import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component'
         
         <button
           type="button"
-          class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           (click)="addArrayItem()"
+          [disabled]="isMaxItemsReached()"
         >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
           Add Item
         </button>
       </div>
@@ -42,8 +46,9 @@ import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component'
             
             <button
               type="button"
-              class="text-red-500 hover:text-red-700 text-sm"
+              class="text-red-500 hover:text-red-700 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               (click)="removeArrayItem(i)"
+              [disabled]="isMinItemsReached()"
             >
               Remove
             </button>
@@ -69,6 +74,41 @@ import { DynamicFieldComponent } from '../dynamic-field/dynamic-field.component'
           <p class="text-gray-400 text-xs">Click "Add Item" to start</p>
         </div>
       }
+
+      <!-- Items Count Info -->
+      @if (field.minItems || field.maxItems) {
+        <div class="mt-3 text-xs text-gray-500 flex justify-between items-center">
+          <span>
+            Items: {{ arrayFormGroups.length }}
+            @if (field.minItems && field.maxItems) {
+              ({{ field.minItems }} - {{ field.maxItems }})
+            } @else if (field.minItems) {
+              (Min: {{ field.minItems }})
+            } @else if (field.maxItems) {
+              (Max: {{ field.maxItems }})
+            }
+          </span>
+          
+          @if (isMaxItemsReached()) {
+            <span class="text-orange-600 bg-orange-50 px-2 py-1 rounded text-xs">
+              Maximum items reached
+            </span>
+          }
+          
+          @if (isMinItemsReached() && arrayFormGroups.length > 0) {
+            <span class="text-blue-600 bg-blue-50 px-2 py-1 rounded text-xs">
+              Minimum items required
+            </span>
+          }
+        </div>
+      }
+
+      <!-- Required field validation -->
+      @if (field.required && arrayFormGroups.length === 0) {
+        <div class="mt-2 text-sm text-red-600">
+          At least one item is required
+        </div>
+      }
     </div>
   `
 })
@@ -83,7 +123,8 @@ export class FieldArrayManagerComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('Array Manager initialized for:', this.field.label);
-    console.log('Array fields:', this.field.arrayFields);
+    console.log('Min items:', this.field.minItems);
+    console.log('Max items:', this.field.maxItems);
 
     // Create FormArray
     this.arrayFormArray = this.fb.array([]);
@@ -91,15 +132,23 @@ export class FieldArrayManagerComponent implements OnInit {
     // Add to parent form
     this.parentForm.addControl(this.field.value, this.arrayFormArray);
     
-    // Add minimum required items
-    if (this.field.minItems && this.field.minItems > 0) {
-      for (let i = 0; i < this.field.minItems; i++) {
-        this.addArrayItem();
+    // Defer adding minimum required items to avoid expression changed error
+    Promise.resolve().then(() => {
+      if (this.field.minItems && this.field.minItems > 0) {
+        for (let i = 0; i < this.field.minItems; i++) {
+          this.addArrayItem();
+        }
       }
-    }
+    });
   }
 
   addArrayItem(): void {
+    // Check if we can add more items
+    if (this.isMaxItemsReached()) {
+      console.warn('Cannot add more items: maximum limit reached');
+      return;
+    }
+
     console.log('Adding new array item');
     
     // Create new FormGroup for this array item
@@ -111,10 +160,16 @@ export class FieldArrayManagerComponent implements OnInit {
     // Add to tracking array
     this.arrayFormGroups.push(newItemGroup);
     
-    console.log(`Added item ${this.arrayFormGroups.length}:`, newItemGroup);
+    console.log(`Added item ${this.arrayFormGroups.length}/${this.field.maxItems || 'unlimited'}:`, newItemGroup);
   }
 
   removeArrayItem(index: number): void {
+    // Check if we can remove items
+    if (this.isMinItemsReached()) {
+      console.warn('Cannot remove item: minimum limit reached');
+      return;
+    }
+
     console.log('Removing array item at index:', index);
     
     if (index >= 0 && index < this.arrayFormGroups.length) {
@@ -123,6 +178,48 @@ export class FieldArrayManagerComponent implements OnInit {
       
       // Remove from tracking array
       this.arrayFormGroups.splice(index, 1);
+      
+      console.log(`Removed item. Remaining: ${this.arrayFormGroups.length}/${this.field.minItems || 0} minimum`);
     }
+  }
+
+  /**
+   * Check if maximum items limit is reached
+   */
+  isMaxItemsReached(): boolean {
+    if (!this.field.maxItems) {
+      return false; // No limit
+    }
+    return this.arrayFormGroups.length >= this.field.maxItems;
+  }
+
+  /**
+   * Check if we're at minimum items limit (can't remove more)
+   */
+  isMinItemsReached(): boolean {
+    if (!this.field.minItems) {
+      return this.arrayFormGroups.length <= 0; // Can't go below 0
+    }
+    return this.arrayFormGroups.length <= this.field.minItems;
+  }
+
+  /**
+   * Check if the current number of items satisfies minimum requirement
+   */
+  hasMinimumItems(): boolean {
+    if (!this.field.minItems) {
+      return true; // No minimum required
+    }
+    return this.arrayFormGroups.length >= this.field.minItems;
+  }
+
+  /**
+   * Get current status for debugging
+   */
+  getStatus(): string {
+    const current = this.arrayFormGroups.length;
+    const min = this.field.minItems || 0;
+    const max = this.field.maxItems || '∞';
+    return `${current} items (${min}-${max})`;
   }
 }

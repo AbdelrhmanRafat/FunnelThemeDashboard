@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormField, FieldType } from '../../../Model/formfields';
 import { FieldArrayManagerComponent } from '../field-array-manager/field-array-manager.component';
@@ -30,7 +30,13 @@ import { FieldUrlInputComponent } from '../field-url-input/field-url-input.compo
   ],
   templateUrl: './dynamic-field.component.html'
 })
-export class DynamicFieldComponent {
+export class DynamicFieldComponent implements OnInit {
+  ngOnInit() : void {    
+    if (this.field.type === FieldType.SELECT) {
+      console.log('📋 SELECT field detected:', this.field);
+      console.log('📋 SELECT options:', this.field.options);
+    }
+  }  
   @Input() field!: FormField;
   @Input() parentForm!: FormGroup;
   

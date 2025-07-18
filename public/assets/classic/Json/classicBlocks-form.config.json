@@ -227,7 +227,7 @@
         "value": "items",
         "required": true,
         "minItems": 1,
-        "maxItems": 20,
+        "maxItems": 5,
         "arrayFields": [
           {
             "label": "Customer Name & Location",
@@ -374,7 +374,7 @@
           },
           {
             "label": "Delivery Options",
-            "type": "complex-array",
+            "type": "array-manager",
             "value": "DeliveryOptions",
             "required": true,
             "minItems": 1,
@@ -774,32 +774,32 @@
           },
           {
             "label": "Price Per Item",
-            "type": "currency-input",
+            "type": "number-input",
             "value": "price_per_item",
             "required": true,
             "min": 0
           },
           {
             "label": "Original Price Per Item",
-            "type": "currency-input",
+            "type": "number-input",
             "value": "original_price_per_item",
             "min": 0
           },
           {
             "label": "Original Total",
-            "type": "currency-input",
+            "type": "number-input",
             "value": "original_total",
             "readonly": true
           },
           {
             "label": "Total Price",
-            "type": "currency-input",
+            "type": "number-input",
             "value": "total_price",
             "readonly": true
           },
           {
             "label": "Discount Amount",
-            "type": "currency-input",
+            "type": "number-input",
             "value": "discount",
             "readonly": true
           },
@@ -811,13 +811,13 @@
           },
           {
             "label": "Shipping Price",
-            "type": "currency-input",
+            "type": "number-input",
             "value": "shipping_price",
             "min": 0
           },
           {
             "label": "Final Total",
-            "type": "currency-input",
+            "type": "number-input",
             "value": "final_total",
             "readonly": true
           }
