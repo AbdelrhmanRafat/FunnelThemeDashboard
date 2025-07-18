@@ -1,0 +1,30 @@
+<div class="mb-4">
+  <label class="block text-sm font-medium text-gray-700 mb-2">
+    {{ field.label }}
+    @if (!!field.required && !field.nullable) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+
+  <select
+    class="w-full border-gray-300 rounded-md shadow-sm"
+    [formControl]="fieldControl"
+  >
+    <option value="">-- اختر الأيقونة --</option>
+    @for (iconName of availableIcons; track iconName) {
+      <option [value]="iconName">{{ iconName }}</option>
+    }
+  </select>
+
+  <!-- معاينة الأيقونة المحددة -->
+  @if (fieldControl.value) {
+    <div class="mt-2 flex items-center gap-2 text-sm text-gray-600">
+      <span>معاينة:</span>
+      <lucide-icon [name]="fieldControl.value" class="w-5 h-5" />
+    </div>
+  }
+
+  @if (field.description) {
+    <p class="mt-1 text-sm text-gray-500">{{ field.description }}</p>
+  }
+</div>

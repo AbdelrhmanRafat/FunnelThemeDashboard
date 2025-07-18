@@ -103,7 +103,7 @@
           },
           {
             "label": "Content",
-            "type": "rich-textarea",
+            "type": "textarea",
             "value": "content",
             "required": true,
             "maxLength": 1000
@@ -168,7 +168,7 @@
           },
           {
             "label": "Content",
-            "type": "rich-textarea",
+            "type": "textarea",
             "value": "content",
             "required": true,
             "maxLength": 1000
@@ -239,7 +239,7 @@
           },
           {
             "label": "Review Content",
-            "type": "rich-textarea",
+            "type": "textarea",
             "value": "content",
             "required": true,
             "minLength": 10,
@@ -990,7 +990,7 @@
           },
           {
             "label": "Answer",
-            "type": "rich-textarea",
+            "type": "textarea",
             "value": "content",
             "required": true,
             "maxLength": 1000
