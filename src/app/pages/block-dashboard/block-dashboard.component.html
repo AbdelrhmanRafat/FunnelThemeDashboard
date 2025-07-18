@@ -59,7 +59,6 @@
       class="fixed top-0 left-0 w-80 sm:w-96 lg:w-3/12 h-full lg:h-auto bg-gray-800 lg:bg-transparent z-50 lg:z-auto transform transition-transform duration-300 lg:transform-none lg:sticky lg:top-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto"
       [class.translate-x-0]="isMobileSidebarOpen"
       [class.-translate-x-full]="!isMobileSidebarOpen"
-      [selectedBlockKey]="selectedBlock?.key || null"
       (blockSelected)="onBlockSelected($event)"
       (closeMobileSidebar)="closeMobileSidebar()"
     >
