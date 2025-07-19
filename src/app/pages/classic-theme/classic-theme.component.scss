@@ -1,0 +1,870 @@
+/* === Body Font Application === */
+body {
+  background-color: var(--classic-color-background);
+  color: var(--classic-color-on-background);
+}
+
+/* === Classic Theme Reusable Classes === */
+.classic-main-color {
+    background-color: var(--classic-color-surface);
+    color: var(--classic-color-on-surface);
+    font-family: var(--classic-font-family);
+}
+
+.classic-section {
+    background-color: var(--classic-color-surface);
+    padding: var(--classic-section-padding);
+    border-radius: var(--classic-section-radius);
+    box-shadow: var(--classic-section-shadow);
+    font-family: var(--classic-font-family);
+}
+
+.classic-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--classic-header-gap);
+    margin-bottom: var(--classic-header-margin-bottom);
+    font-size: var(--classic-header-size);
+    font-weight: var(--classic-header-weight);
+    color: var(--classic-color-on-surface);
+    font-family: var(--classic-font-family);
+}
+
+.classic-middle-title {
+    text-align: center;
+    font-size: var(--classic-header-center-size);
+    font-weight: var(--classic-header-center-weight);
+    color: var(--classic-color-on-surface);
+    margin-bottom: var(--classic-header-center-margin-bottom);
+    font-family: var(--classic-font-family);
+}
+
+.classic-divider {
+    background: linear-gradient(to right, var(--classic-color-tertiary), var(--classic-color-secondary));
+    height: 2px;
+    border: none;
+    border-radius: 1px;
+    margin: 1rem 0;
+}
+
+/* === Scroll to Top Button === */
+.classic-scrollToTopBtn {
+    background-color: var(--classic-color-primary);
+    color: var(--classic-color-on-primary);
+    width: 3.5rem; /* w-14 */
+    height: 3.5rem; /* h-14 */
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem; /* text-xl */
+    font-family: var(--classic-font-family);
+    box-shadow: var(--classic-section-shadow);
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+}
+
+.classic-scrollToTopBtn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.classic-scrollToTopBtn:hover {
+    background-color: var(--classic-color-primary-dark);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.classic-scrollToTopBtn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+/* === Responsive Design === */
+@media (max-width: 640px) {
+  .classic-section {
+    padding: 0.75rem;
+  }
+  
+  .classic-section-header {
+    font-size: calc(var(--classic-header-size) * 0.8);
+  }
+  
+  .classic-middle-title {
+    font-size: calc(var(--classic-header-center-size) * 0.8);
+  }
+  
+  .classic-scrollToTopBtn {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
+    bottom: 1rem;
+    right: 1rem;
+  }
+}
+
+/* === Rates Section Classes === */
+.classic-rates {
+    font-size: 1.5rem;
+    color: var(--classic-color-on-surface);
+}
+
+.classic-rating-display {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    font-weight: 600;
+}
+
+.classic-rating-star-full {
+    color: var(--classic-color-warning);
+    font-size: 1.25rem;
+}
+
+.classic-rating-star-half {
+    color: var(--classic-color-warning);
+    font-size: 1.25rem;
+}
+
+.classic-rating-star-empty {
+    color: var(--classic-color-outline);
+    font-size: 1.25rem;
+}
+
+.classic-rating-number {
+    color: var(--classic-color-on-surface-variant);
+    font-size: 1rem;
+    margin-left: 0.5rem;
+    font-weight: 500;
+}
+
+.classic-rating-count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.classic-rating-label {
+    color: var(--classic-color-on-surface-variant);
+    display: inline-block;
+    margin: 0;
+}
+.classic-rating-star-full {
+    color: var(--classic-color-warning);
+    font-size: 1.25rem;
+  }
+  /* === Classic Form Components (Refactored with Custom Variables) === */
+
+/* Main form container */
+.classic-form-div-container {
+    background-color: var(--classic-color-surface);
+    border-radius: var(--classic-section-radius);
+    box-shadow: var(--classic-section-shadow);
+}
+
+/* Form title styling */
+.classic-form-h1-title {
+    color: var(--classic-color-on-surface);
+    font-size: var(--classic-header-size);
+    font-weight: var(--classic-header-weight);
+    margin-bottom: var(--classic-header-margin-bottom);
+}
+
+/* Section headers within form */
+.classic-form-h2-title {
+    color: var(--classic-color-on-surface);
+    font-size: var(--classic-header-center-size);
+    font-weight: var(--classic-header-center-weight);
+    margin-bottom: var(--classic-header-center-margin-bottom);
+}
+
+/* Form group container */
+.classic-form-div-group {
+    position: relative;
+    width: 100%;
+}
+
+/* Base input field styling */
+.classic-form-input-base {
+    width: 100%;
+    padding: 1rem 0.75rem 0.75rem 0.75rem;
+    border: 2px solid var(--classic-color-outline);
+    border-radius: 12px;
+    color: var(--classic-color-on-surface);
+    background-color: var(--classic-color-surface);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+/* Responsive input sizing */
+.classic-form-input-responsive {
+    padding: 1rem 0.75rem 0.75rem 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .classic-form-input-responsive {
+        padding: 1.25rem 1rem 1rem 1rem;
+    }
+}
+
+/* Textarea specific responsive styling */
+.classic-form-textarea-responsive {
+    padding: 1rem 0.75rem 0.75rem 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .classic-form-textarea-responsive {
+        padding: 1.25rem 1rem 1rem 1rem;
+    }
+}
+
+/* Select base styling */
+.classic-form-select-base {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--classic-color-outline);
+    border-radius: 12px;
+    color: var(--classic-color-on-surface);
+    background-color: var(--classic-color-surface);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* Select responsive styling */
+.classic-form-select-responsive {
+    padding: 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .classic-form-select-responsive {
+        padding: 1rem;
+    }
+}
+
+/* Floating label styling */
+.classic-form-label-floating {
+    position: absolute;
+    left: 0.75rem;
+    top: 1rem;
+    color: var(--classic-color-on-surface-variant);
+    font-size: 1rem;
+    font-weight: 500;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    background-color: var(--classic-color-surface);
+    padding: 0 0.25rem;
+    transform-origin: left top;
+}
+
+/* Static label styling */
+.classic-form-label-static {
+    color: var(--classic-color-on-surface);
+    font-weight: 500;
+}
+
+/* Focus and valid states for input */
+.classic-form-input-base:focus,
+.classic-form-input-base:valid {
+    border-color: var(--classic-color-primary);
+    box-shadow: var(--classic-section-shadow);
+}
+
+.classic-form-select-base:focus {
+    border-color: var(--classic-color-primary);
+    box-shadow: var(--classic-section-shadow);
+}
+
+/* Floating label animation */
+.classic-form-input-base:focus ~ .classic-form-label-floating,
+.classic-form-input-base:valid ~ .classic-form-label-floating,
+.classic-form-textarea-responsive:focus ~ .classic-form-label-floating,
+.classic-form-textarea-responsive:valid ~ .classic-form-label-floating {
+    transform: translateY(-1.5rem) scale(0.85);
+    color: var(--classic-color-primary);
+    font-weight: 600;
+}
+
+/* Error state styling */
+.classic-form-span-error {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--classic-color-error);
+    min-height: 1.25rem;
+    margin-top: 0.25rem;
+}
+
+/* Input validation states */
+.classic-form-input-error {
+    border-color: var(--classic-color-error) !important;
+}
+
+.classic-form-input-success {
+    border-color: var(--classic-color-success) !important;
+}
+
+/* RTL support for floating labels */
+.classic-form-input-base.text-right ~ .classic-form-label-floating,
+.classic-form-textarea-responsive.text-right ~ .classic-form-label-floating {
+    left: auto;
+    right: 0.75rem;
+    transform-origin: right top;
+}
+
+.classic-form-input-base.text-left ~ .classic-form-label-floating,
+.classic-form-textarea-responsive.text-left ~ .classic-form-label-floating {
+    right: auto;
+    left: 0.75rem;
+    transform-origin: left top;
+}
+
+.classic-form-input-base.text-right:focus ~ .classic-form-label-floating,
+.classic-form-input-base.text-right:valid ~ .classic-form-label-floating,
+.classic-form-textarea-responsive.text-right:focus ~ .classic-form-label-floating,
+.classic-form-textarea-responsive.text-right:valid ~ .classic-form-label-floating {
+    transform: translateY(-1.5rem) scale(0.85);
+}
+
+/* Payment and delivery option containers */
+.classic-form-div-payment {
+    padding: 0.75rem;
+    border: 1px solid var(--classic-color-outline);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    background-color: var(--classic-color-surface);
+}
+
+@media (min-width: 768px) {
+    .classic-form-div-payment {
+        padding: 1rem;
+    }
+}
+
+/* Hover state for payment options */
+.classic-form-div-payment:hover {
+    background-color: var(--classic-color-surface-variant);
+    border-color: var(--classic-color-outline-variant);
+}
+
+/* Focus state for payment options */
+.classic-form-div-payment:focus-within {
+    border-color: var(--classic-color-primary);
+    outline: 2px solid var(--classic-color-primary);
+    outline-offset: 2px;
+}
+
+/* Payment option labels */
+.classic-form-span-payment-label {
+    display: block;
+    color: var(--classic-color-on-surface);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Payment option descriptions */
+.classic-form-span-payment-description {
+    display: block;
+    color: var(--classic-color-on-surface-variant);
+}
+
+/* Radio button styling */
+.classic-form-input-radio {
+    accent-color: var(--classic-color-primary);
+    border-color: var(--classic-color-outline);
+    cursor: pointer;
+}
+
+/* Custom radio indicator */
+.classic-form-div-radio-indicator {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--classic-color-outline);
+    border-radius: 50%;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    background-color: var(--classic-color-surface);
+}
+
+/* Radio dot inside custom indicator */
+.classic-form-div-radio-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+}
+
+/* Active state for custom radio indicator */
+.classic-form-input-radio:checked + .classic-form-div-content .classic-form-div-radio-indicator {
+    border-color: var(--classic-color-primary);
+    background-color: var(--classic-color-primary);
+}
+
+.classic-form-input-radio:checked + .classic-form-div-content .classic-form-div-radio-dot {
+    background-color: var(--classic-color-surface);
+}
+
+/* Notes section specific styling */
+.classic-form-div-notes {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+    .classic-form-div-notes {
+        margin-top: 1.5rem;
+    }
+}
+
+/* Button section styling */
+.classic-form-div-button-container {
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .classic-form-div-button-container {
+        margin-top: 2rem;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .classic-form-input-base,
+    .classic-form-select-base,
+    .classic-form-div-payment,
+    .classic-form-div-radio-indicator,
+    .classic-form-div-radio-dot,
+    .classic-form-label-floating {
+        transition: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .classic-form-input-base,
+    .classic-form-select-base {
+        border-width: 3px;
+    }
+
+    .classic-form-div-payment {
+        border-width: 2px;
+    }
+    
+    .classic-form-div-radio-indicator {
+        border-width: 3px;
+    }
+}
+/* === Classic Coupon Component === */
+
+/* Icon container for smooth transitions */
+.copy-icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-icon,
+.check-icon {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Coupon card styling */
+.classic-coupon-card {
+    background-color: var(--classic-color-surface-variant);
+    border-color: var(--classic-color-primary);
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.classic-coupon-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Coupon code text */
+.classic-coupon-code {
+    color: var(--classic-color-primary-dark);
+    user-select: all; /* Allow easy text selection */
+}
+
+/* Copy button styling */
+.classic-coupon-copy {
+    background-color: var(--classic-color-secondary);
+    color: var(--classic-color-on-secondary);
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.classic-coupon-copy:hover {
+    background-color: var(--classic-color-secondary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.classic-coupon-copy:focus {
+    outline: none;
+    border-color: var(--classic-color-primary);
+    box-shadow: 0 0 0 2px var(--classic-color-primary-light);
+}
+
+.classic-coupon-copy:active {
+    transform: translateY(0);
+}
+
+/* Copied state */
+.classic-coupon-copy.copied {
+    background-color: var(--classic-color-success);
+    color: var(--classic-color-on-success);
+    transform: scale(1.02);
+}
+
+.classic-coupon-copy.copied:hover {
+    background-color: var(--classic-color-success);
+    transform: scale(1.02);
+}
+
+/* Screen reader only class */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Loading state (optional enhancement) */
+.classic-coupon-copy[disabled] {
+    opacity: 0.6;
+    transform: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .classic-coupon-card {
+        border-width: 3px;
+        border-style: solid;
+    }
+    
+    .classic-coupon-copy {
+        border-width: 2px;
+        border-style: solid;
+        border-color: var(--classic-color-on-secondary);
+    }
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .classic-coupon-card,
+    .classic-coupon-copy {
+        transition: none;
+    }
+    
+    .classic-coupon-card:hover,
+    .classic-coupon-copy:hover,
+    .classic-coupon-copy.copied {
+        transform: none;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .classic-coupon-card {
+        min-width: 100%;
+    }
+    
+    .classic-coupon-copy {
+        width: 100%;
+        justify-content: center;
+    }
+}
+/* === Order Confirmation Notice === */
+.classic-order-confirmation-notice {
+    background-color: var(--classic-color-surface);
+    color: var(--classic-color-on-surface);
+    border-radius: var(--classic-section-radius);
+    box-shadow: var(--classic-section-shadow);
+}
+
+.classic-order-confirmation-title {
+    color: var(--classic-color-on-surface);
+}
+
+.classic-order-confirmation-icon {
+    background-color: var(--classic-color-secondary);
+    color: var(--classic-color-on-secondary);
+}
+/* === Product Costs Section === */
+.classic-product-costs-container {
+    background-color: var(--classic-color-surface);
+    padding: var(--classic-section-padding);
+    border-radius: var(--classic-section-radius);
+    overflow: hidden;
+    border: 1px solid var(--classic-color-outline-variant);
+}
+
+.classic-product-costs-body {
+    border-bottom: 1px solid var(--classic-color-outline);
+}
+
+.classic-product-costs-row {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--classic-color-outline-variant);
+    transition: background-color 0.2s ease;
+}
+
+.classic-product-costs-row:hover {
+    background-color: var(--classic-color-surface-variant);
+}
+
+.classic-product-costs-row:last-child {
+    border-bottom: none;
+}
+
+.classic-product-costs-label {
+    color: var(--classic-color-on-surface-variant);
+    font-weight: 500;
+}
+
+.classic-product-costs-value {
+    color: var(--classic-color-on-surface);
+    font-weight: 600;
+}
+
+.classic-product-costs-discount {
+    color: var(--classic-color-success);
+    font-weight: 600;
+}
+
+.classic-product-costs-total-section {
+    background-color: var(--classic-color-primary-light);
+    padding: 1rem 1.5rem;
+    border-top: 2px solid var(--classic-color-primary);
+    margin-top: 0.75rem;
+    border-radius: var(--classic-section-radius);
+}
+
+.classic-product-costs-total-label {
+    color: var(--classic-color-on-primary);
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.classic-product-costs-total-value {
+    color: var(--classic-color-on-primary);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* === Responsive Design === */
+@media (max-width: 640px) {
+    .classic-product-costs-container {
+        padding: 0.75rem;
+    }
+    
+    .classic-product-costs-total-section {
+        padding: 0.75rem 1rem;
+    }
+    
+    .classic-product-costs-total-label,
+    .classic-product-costs-total-value {
+        font-size: 1rem;
+    }
+}
+
+/* === Loading State === */
+.classic-product-costs-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.classic-product-costs-loading .classic-product-costs-value,
+.classic-product-costs-loading .classic-product-costs-discount,
+.classic-product-costs-loading .classic-product-costs-total-value {
+    background-color: var(--classic-color-surface-variant);
+    color: transparent;
+    border-radius: 4px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* === Error State === */
+.classic-product-costs-error {
+    border-color: var(--classic-color-error);
+    background-color: var(--classic-color-error-light);
+}
+
+.classic-product-costs-error .classic-product-costs-label,
+.classic-product-costs-error .classic-product-costs-value {
+    color: var(--classic-color-on-error);
+}
+
+/* === Focus States for Accessibility === */
+.classic-product-costs-row:focus-within {
+    outline: 2px solid var(--classic-color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* === High Contrast Mode === */
+@media (prefers-contrast: high) {
+    .classic-product-costs-container {
+        border: 2px solid var(--classic-color-outline);
+    }
+    
+    .classic-product-costs-total-section {
+        border-top: 3px solid var(--classic-color-primary);
+    }
+}
+/* === Bundle Options Section === */
+.classic-bundle-options-title {
+    color: var(--classic-color-on-surface);
+}
+
+.classic-bundle-options-group {
+    border-color: var(--classic-color-primary);
+}
+
+.classic-bundle-options-label {
+    transition: all 0.3s ease;
+    border-radius: var(--classic-section-radius);
+    background-color: var(--classic-color-surface);
+}
+
+.classic-bundle-options-label:hover {
+    box-shadow: var(--classic-section-shadow);
+}
+
+.classic-bundle-options-label:has(:checked) {
+    border-color: var(--classic-color-primary);
+    background-color: var(--classic-color-primary-light);
+    background-color: rgba(79, 182, 172, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.classic-bundle-options-option-title {
+    color: var(--classic-color-on-surface);
+}
+
+.classic-bundle-options-option-details {
+    color: var(--classic-color-on-surface-variant);
+}
+
+.classic-bundle-options-unit-badge {
+    background-color: var(--classic-color-surface-variant);
+    color: var(--classic-color-on-surface-variant);
+}
+
+.classic-bundle-options-price-info {
+    color: var(--classic-color-on-surface-variant);
+}
+
+.classic-bundle-options-final-price {
+    color: var(--classic-color-primary);
+}
+
+.classic-bundle-options-price-discount {
+    color: var(--classic-color-success);
+}
+
+.classic-bundle-options-price-regular {
+    color: var(--classic-color-primary);
+}
+
+.classic-bundle-options-original-price {
+    color: var(--classic-color-on-surface-variant);
+}
+
+.classic-bundle-options-discount-badge {
+    background-color: var(--classic-color-success-light);
+    color: var(--classic-color-on-success);
+}
+
+.classic-bundle-options-discount-icon {
+    color: var(--classic-color-success);
+}
+/* === Product Details Section Classes === */
+.classic-product-details-section {
+    background-color: var(--classic-color-background);
+}
+
+.classic-product-details-container {
+    background: linear-gradient(135deg, var(--classic-color-surface) 0%, var(--classic-color-surface-variant) 100%);
+    border-radius: var(--classic-section-radius);
+}
+
+.classic-product-details-badge-success {
+    background-color: var(--classic-color-success-light);
+    color: var(--classic-color-on-success);
+}
+
+.classic-product-details-badge-error {
+    background-color: var(--classic-color-error-light);
+    color: var(--classic-color-on-error);
+}
+
+.classic-product-details-sku {
+    color: var(--classic-color-on-surface-variant);
+}
+
+.classic-product-details-title {
+    color: var(--classic-color-on-surface);
+}
+
+.classic-product-details-price {
+    color: var(--classic-color-primary);
+}
+
+.classic-product-details-price--discount {
+    color: var(--classic-color-on-surface-variant);
+}
+
+.classic-product-details-description-header {
+    color: var(--classic-color-on-surface);
+}
+
+.classic-product-details-text-body {
+    color: var(--classic-color-on-surface-variant);
+}
+
+.classic-form-submit {
+    width: 100%;
+    background-color: var(--classic-color-primary);
+    color: var(--classic-color-on-primary);
+    padding: 1rem;
+    border-radius: var(--classic-section-radius);
+}
+
+/* === Order Confirmation Notice === */
+.classic-order-through-whatsapp {
+    background-color: var(--classic-color-surface);
+    color: var(--classic-color-on-surface);
+    border-radius: var(--classic-section-radius);
+    padding: var(--classic-section-padding);
+}

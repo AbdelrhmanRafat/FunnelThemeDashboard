@@ -1,0 +1,235 @@
+/* ===== HEADER STYLES ===== */
+.classic-header {
+  background-color: var(--classic-color-surface);
+  box-shadow: var(--classic-section-shadow);
+}
+
+.classic-header-logo {
+  width: 100px;
+  max-height: 80px;
+  object-fit: cover;
+}
+
+.classic-header-title {
+  color: var(--classic-color-on-surface);
+  margin: 0;
+}
+
+.classic-header-subtitle {
+  color: var(--classic-color-on-surface-variant);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ===== MOBILE MENU BUTTON ===== */
+.classic-menu-button {
+  background-color: var(--classic-color-surface-variant);
+  border: 1px solid var(--classic-color-outline-variant);
+  color: var(--classic-color-on-surface);
+  position: relative;
+  z-index: 70;
+}
+
+.classic-menu-button:hover {
+  background-color: var(--classic-color-primary);
+  border-color: var(--classic-color-primary-light);
+  color: var(--classic-color-on-primary);
+  transform: scale(1.05);
+}
+
+.classic-menu-button.active {
+  background-color: var(--classic-color-primary);
+  color: var(--classic-color-on-primary);
+  border-color: var(--classic-color-primary);
+}
+
+/* Hamburger lines */
+.classic-hamburger-line {
+  background-color: var(--classic-color-on-surface);
+}
+
+.classic-menu-button:hover .classic-hamburger-line {
+  background-color: var(--classic-color-on-primary);
+}
+
+/* Hamburger Animation when Active */
+.classic-menu-button.active .classic-hamburger-line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.classic-menu-button.active .classic-hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.classic-menu-button.active .classic-hamburger-line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ===== MOBILE MENU OVERLAY ===== */
+.classic-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.classic-menu-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Menu Backdrop */
+.classic-menu-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+/* Menu Content Container */
+.classic-menu-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  background-color: var(--classic-color-surface);
+  box-shadow: var(--classic-section-shadow);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
+}
+
+.classic-menu-overlay.show .classic-menu-content {
+  transform: translateX(0);
+}
+
+/* Menu Header */
+.classic-menu-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--classic-color-outline-variant);
+}
+
+.classic-menu-title {
+  color: var(--classic-color-on-surface);
+  margin: 0;
+}
+
+.classic-menu-close {
+  background-color: var(--classic-color-surface-variant);
+  border: 1px solid var(--classic-color-outline-variant);
+  color: var(--classic-color-on-surface-variant);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.classic-menu-close:hover {
+  background-color: var(--classic-color-error);
+  color: var(--classic-color-on-error);
+  border-color: var(--classic-color-error);
+}
+
+/* Menu Navigation */
+.classic-menu-nav {
+  flex: 1;
+}
+
+.classic-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.classic-menu-item {
+  margin: 0;
+}
+
+.classic-menu-link {
+  display: block;
+  border-radius: 0.5rem;
+  color: var(--classic-color-on-surface-variant);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 1px solid var(--classic-color-outline-variant);
+  background-color: var(--classic-color-surface-variant);
+}
+
+.classic-menu-link:hover {
+  background-color: var(--classic-color-primary);
+  color: var(--classic-color-on-primary);
+  border-color: var(--classic-color-primary);
+  box-shadow: var(--classic-section-shadow);
+}
+
+.classic-menu-link:active {
+  background-color: var(--classic-color-primary-dark);
+  color: var(--classic-color-on-primary);
+}
+
+/* Active state for current section */
+.classic-menu-link.active {
+  background-color: var(--classic-color-primary);
+  color: var(--classic-color-on-primary);
+  border-color: var(--classic-color-primary);
+}
+
+/* ===== BODY SCROLL PREVENTION ===== */
+body.menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (min-width: 768px) {
+  .classic-menu-overlay {
+    display: none !important;
+  }
+  
+  .classic-menu-button {
+    display: none !important;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  .classic-menu-overlay,
+  .classic-menu-content,
+  .classic-menu-button,
+  .classic-hamburger-line,
+  .classic-header {
+    transition: none;
+  }
+}
+
+/* Focus styles for accessibility */
+.classic-menu-button:focus,
+.classic-menu-close:focus,
+.classic-menu-link:focus {
+  outline: 2px solid var(--classic-color-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .classic-menu-backdrop {
+    background: rgba(0, 0, 0, 0.8);
+  }
+  
+  .classic-menu-content {
+    border: 2px solid var(--classic-color-outline);
+  }
+  
+  .classic-menu-link {
+    border: 2px solid var(--classic-color-outline);
+  }
+}

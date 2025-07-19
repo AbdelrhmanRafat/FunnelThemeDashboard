@@ -1,0 +1,29 @@
+    <header>
+      <div id="classic-header" class="classic-header fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out">
+        <div class="w-11/12 md:container mx-auto py-2">
+          <!-- Top row with Language Switcher and Menu Button -->
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex justify-end">
+              <button class="classic-lang-switcher px-3 py-2 text-xs font-medium rounded border transition-all duration-300 hover:scale-105 cursor-pointer" aria-label="التبديل إلى العربية" type="button">
+                <span class="text-xs font-medium">عربي</span>
+              </button>
+            </div>
+            <button id="header-menu-button" class="classic-menu-button p-2 rounded-lg transition-all duration-300 md:hidden flex items-center justify-center w-10 h-10" aria-label="Open navigation menu" type="button">
+              <div class="w-5 h-3.5 flex flex-col justify-between">
+                <span class="classic-hamburger-line w-full h-0.5 rounded-sm transition-all duration-300"></span>
+                <span class="classic-hamburger-line w-full h-0.5 rounded-sm transition-all duration-300"></span>
+                <span class="classic-hamburger-line w-full h-0.5 rounded-sm transition-all duration-300"></span>
+              </div>
+            </button>
+          </div>
+          <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center text-center">
+              <img id="headerLogo" src="assets/default-logo.svg" alt="اوليفر للملابس" class="classic-header-logo w-25 mb-2 object-contain">
+              <h1 class="classic-header-title text-4xl font-bold leading-tight">{{ headerBlock?.data?.title_ar }}</h1>
+              <p class="classic-header-subtitle text-sm max-w-80 mt-1" title="ملابس عصرية بجودة عالية وسعر مناسب">ملابس عصرية بجودة عالية وسعر مناسب</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pt-36 md:pt-60"></div>
+    </header>

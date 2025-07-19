@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { BlockSessionStorage } from '../../models/theme.classic.blocks';
 import { FunnelFormGenericBuilderComponent } from '../../features/Dynamic Form Builder Funnel Blocks/Components/funnel-form-generic-builder/funnel-form-generic-builder.component';
 import { BlocksService } from '../../core/services/blocks.service';
+import { ClassicHeaderComponent } from "../../pages/classic-theme/Blocks/classic-header/classic-header.component";
 
 @Component({
   selector: 'app-block-dashboard-form',
   standalone: true,
-  imports: [CommonModule, FunnelFormGenericBuilderComponent],
+  imports: [CommonModule, FunnelFormGenericBuilderComponent, ClassicHeaderComponent],
   templateUrl: './block-dashboard-form.component.html',
   styleUrl: './block-dashboard-form.component.scss'
 })

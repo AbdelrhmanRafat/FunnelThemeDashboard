@@ -39,4 +39,85 @@ $FunnelThemesDashboard-theme: mat.define-theme((
 @tailwind components;
 @tailwind utilities;
 html, body { height: 100%; }
+:root {
+  /* ===================================================================== */
+  /* === CLASSIC THEME (Deep Ocean Blue) === */
+  /* ===================================================================== */
+  
+  /* === Typography === */
+  --classic-font-family: 'Crimson Text', Georgia, 'Times New Roman', serif;
+  
+  /* === Color System === */
+  --classic-color-primary: #1e40af;
+  --classic-color-primary-light: #3b82f6;
+  --classic-color-primary-dark: #1e3a8a;
+  --classic-color-on-primary: #ffffff;
+
+  --classic-color-secondary: #0891b2;
+  --classic-color-secondary-light: #06b6d4;
+  --classic-color-secondary-dark: #0e7490;
+  --classic-color-on-secondary: #ffffff;
+
+  --classic-color-tertiary: #374151;
+  --classic-color-tertiary-light: #6b7280;
+  --classic-color-tertiary-dark: #1f2937;
+  --classic-color-on-tertiary: #ffffff;
+
+  --classic-color-error: #dc2626;
+  --classic-color-error-light: #ef4444;
+  --classic-color-error-dark: #b91c1c;
+  --classic-color-on-error: #ffffff;
+
+  --classic-color-success: #059669;
+  --classic-color-success-light: #10b981;
+  --classic-color-success-dark: #047857;
+  --classic-color-on-success: #ffffff;
+
+  --classic-color-warning: #d97706;
+  --classic-color-warning-light: #f59e0b;
+  --classic-color-warning-dark: #b45309;
+  --classic-color-on-warning: #ffffff;
+
+  --classic-color-info: #0284c7;
+  --classic-color-info-light: #0ea5e9;
+  --classic-color-info-dark: #0369a1;
+  --classic-color-on-info: #ffffff;
+
+  /* === Surface Colors === */
+  --classic-color-surface: #f8fafc;
+  --classic-color-surface-variant: #f1f5f9;
+  --classic-color-surface-container: #e2e8f0;
+  --classic-color-surface-container-high: #cbd5e1;
+  --classic-color-on-surface: #0f172a;
+  --classic-color-on-surface-variant: #475569;
+
+  /* === Background === */
+  --classic-color-background: #ffffff;
+  --classic-color-on-background: #1e293b;
+
+  /* === Outline Colors === */
+  --classic-color-outline: #94a3b8;
+  --classic-color-outline-variant: #cbd5e1;
+  --classic-color-outline-focus: var(--classic-color-primary);
+
+  /* === Background Pattern === */
+  --classic-background-image: url('/assets/backgrounds/ocean-waves-pattern.svg');
+  
+  /* Section Variables */
+  --classic-section-radius: 1rem;
+  --classic-section-padding: 1.25rem;
+  --classic-section-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+  
+  /* Header Section Variables */
+  --classic-header-size: 1.875rem;
+  --classic-header-gap: 0.75rem;
+  --classic-header-margin-bottom: 1.5rem;
+  --classic-header-weight: 500;
+
+  /* Header Section Center variables */
+  --classic-header-center-size: 1.875rem; 
+  --classic-header-center-weight: 700; 
+  --classic-header-center-margin-bottom: 1.75rem;
+}
+
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
