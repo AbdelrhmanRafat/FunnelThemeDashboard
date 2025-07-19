@@ -1,5 +1,7 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+// block-dashboard.component.ts
+import { Component, inject, OnInit, ViewChild, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { BlockSidebarComponent } from '../../features/block-sidebar/block-sidebar.component';
 import { BlockDashboardFormComponent } from '../../features/block-dashboard-form/block-dashboard-form.component';
 import { BlockSessionStorage } from '../../models/theme.classic.blocks';
@@ -13,91 +15,181 @@ import { BlocksService } from '../../core/services/blocks.service';
   styleUrl: './block-dashboard.component.scss'
 })
 export class BlockDashboardComponent implements OnInit {
+  // Injected services
   private blocksService = inject(BlocksService);
+  private activatedRoute = inject(ActivatedRoute);
   
   @ViewChild('blockSidebar') blockSidebar!: BlockSidebarComponent;
 
-  // State
-  selectedBlock: BlockSessionStorage | null = null;
-  isInitialized = false;
-  isInitializing = false;
-  initializationError: string | null = null;
+  // Private signals for internal state management
+  private _selectedBlock = signal<BlockSessionStorage | null>(null);
+  private _isInitialized = signal<boolean>(false);
+  private _isInitializing = signal<boolean>(false);
+  private _initializationError = signal<string | null>(null);
+  private _isMobileSidebarOpen = signal<boolean>(false);
+  private _funnelId = signal<number | null>(null);
 
-  // Mobile sidebar state
-  isMobileSidebarOpen = false;
+  // Public readonly signals for template access
+  readonly selectedBlock = this._selectedBlock.asReadonly();
+  readonly isInitialized = this._isInitialized.asReadonly();
+  readonly isInitializing = this._isInitializing.asReadonly();
+  readonly initializationError = this._initializationError.asReadonly();
+  readonly isMobileSidebarOpen = this._isMobileSidebarOpen.asReadonly();
+  readonly funnelId = this._funnelId.asReadonly();
 
-  // Configuration
-  funnelId = 2; // You can make this dynamic or get from route params
-  
-  // Reactive properties for template
-  get totalBlocksCount(): number {
-    return this.blocksService.totalCount();
+  // Service-based computed properties (automatically reactive)
+  readonly totalBlocksCount = computed(() => this.blocksService.totalCount());
+  readonly visibleBlocksCount = computed(() => this.blocksService.visibleCount());
+  readonly loading = computed(() => this.blocksService.loading());
+  readonly error = computed(() => this.blocksService.error());
+
+  // Computed properties for template logic
+  readonly canInitialize = computed(() => 
+    this.funnelId() !== null && !this.isInitializing()
+  );
+
+  readonly hasValidData = computed(() => 
+    this.isInitialized() && this.totalBlocksCount() > 0
+  );
+
+  readonly isReady = computed(() => 
+    this.isInitialized() && !this.loading() && !this.initializationError()
+  );
+
+  constructor() {
+    // Effect with allowSignalWrites for initialization
+    effect(() => {
+      const funnelId = this.funnelId();
+      if (funnelId && !this.isInitialized() && !this.isInitializing()) {
+        this.initializeBlocksAndLoadData();
+      }
+    }, { allowSignalWrites: true });
+
+    // Effect for auto-selecting first visible block
+    effect(() => {
+      if (this.isInitialized() && this.totalBlocksCount() > 0 && !this.selectedBlock()) {
+        const firstVisibleBlock = this.blocksService.visibleBlocks()[0];
+        if (firstVisibleBlock) {
+          this._selectedBlock.set(firstVisibleBlock);
+        }
+      }
+    }, { allowSignalWrites: true });
   }
   
-  get visibleBlocksCount(): number {
-    return this.blocksService.visibleCount();
-  }
-  
-  get loading(): boolean {
-    return this.blocksService.loading();
-  }
-  
-  get error(): string | null {
-    return this.blocksService.error();
-  }
-  
-  async ngOnInit() {
-    await this.initializeBlocksAndLoadData();
+  async ngOnInit(): Promise<void> {
+    // Subscribe to route params to get funnel ID
+    this.activatedRoute.paramMap.subscribe(params => {
+      const id = params.get('id');
+      const funnelId = id ? parseInt(id, 10) : null;
+      
+      if (funnelId && !isNaN(funnelId) && funnelId > 0) {
+        this._funnelId.set(funnelId);
+        console.info(`Loading funnel ${funnelId}`);
+      } else {
+        this._initializationError.set('Invalid or missing funnel ID in route');
+        console.error('Invalid funnel ID');
+      }
+    });
   }
 
   private async initializeBlocksAndLoadData(): Promise<void> {
+    const currentFunnelId = this.funnelId();
+    
+    if (!currentFunnelId) {
+      this._initializationError.set('No funnel ID available for initialization');
+      return;
+    }
+
     try {
-      this.isInitializing = true;
-      this.initializationError = null;
+      this._isInitializing.set(true);
+      this._initializationError.set(null);
+      
+      // Clear any previous errors from service
+      this.blocksService.clearError();
       
       // Initialize blocks session with the funnel ID
-      await this.blocksService.initializeBlocksSession(this.funnelId);
+      await this.blocksService.initializeBlocksSession(currentFunnelId);
       
-      // Load all blocks using the service method
-      this.blocksService.getBlocks().subscribe({
-        next: (blocks) => {
-          this.isInitialized = true;
-        },
-        error: (error) => {
-          this.initializationError = 'Failed to load blocks data';
-        }
-      });
+      // Verify initialization was successful
+      if (this.blocksService.totalCount() > 0) {
+        this._isInitialized.set(true);
+        console.log(
+          `Successfully loaded ${this.blocksService.totalCount()} blocks (${this.blocksService.visibleCount()} visible)`
+        );
+      } else {
+        throw new Error('No blocks were loaded - empty session data');
+      }
       
     } catch (error) {
-      this.initializationError = 'Failed to initialize blocks session';
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Unknown error during blocks session initialization';
+      
+      this._initializationError.set(errorMessage);
+      console.error('Blocks initialization failed:', error);
     } finally {
-      this.isInitializing = false;
+      this._isInitializing.set(false);
     }
   }
 
-  // Mobile sidebar methods
+  // Mobile sidebar controls
   toggleMobileSidebar(): void {
-    this.isMobileSidebarOpen = !this.isMobileSidebarOpen;
+    this._isMobileSidebarOpen.update(open => !open);
   }
 
   closeMobileSidebar(): void {
-    this.isMobileSidebarOpen = false;
+    this._isMobileSidebarOpen.set(false);
   }
 
-  // Block selection handler
+  // Block selection handler (only UI-specific logic)
   onBlockSelected(block: BlockSessionStorage): void {
-    this.selectedBlock = block;
-    this.closeMobileSidebar(); // Close mobile sidebar when a block is selected
+    this._selectedBlock.set(block);
+    this.closeMobileSidebar();
+    console.info(`Selected block: ${block.key}`);
   }
 
   // Retry initialization method
   async retryInitialization(): Promise<void> {
+    // Reset component state
+    this._isInitialized.set(false);
+    this._initializationError.set(null);
+    this._selectedBlock.set(null);
+    
+    // Clear service errors
     this.blocksService.clearError();
+    
+    console.info('Retrying blocks initialization...');
+    
+    // Restart initialization process
     await this.initializeBlocksAndLoadData();
   }
 
-  // Method to clear selection and show all blocks
+  // Clear block selection
   clearSelection(): void {
-    this.selectedBlock = null;
+    this._selectedBlock.set(null);
+    console.info('Block selection cleared');
+  }
+
+  // Refresh all data
+  async refreshData(): Promise<void> {
+    if (this.isInitializing()) {
+      console.warn('Initialization already in progress');
+      return;
+    }
+    
+    console.info('Refreshing blocks data...');
+    this._isInitialized.set(false);
+    await this.initializeBlocksAndLoadData();
+  }
+
+  // Debug method to log final state
+  logFinalState(): void {
+    this.blocksService.logFinalState();
+    console.info('Final state logged to console');
+  }
+
+  // Navigate back or to funnel list (if needed)
+  goBack(): void {
+    console.info('Navigate back functionality');
   }
 }

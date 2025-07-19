@@ -1,4 +1,39 @@
 // types/block.types.ts
+
+// Block Key Enum
+export enum BlockKey {
+  CLASSIC_HEADER = 'classic_header',
+  CLASSIC_IMAGE_TEXT_OVERLAY = 'classic_Image_Text_overlay',
+  CLASSIC_IMAGE_TEXT_BESIDE = 'classic_Image_Text_beside',
+  CLASSIC_REVIEWS = 'classic_reviews',
+  CLASSIC_FORM_FIELDS = 'classic_form_fields',
+  CLASSIC_TEXT_BAR = 'classic_text-bar',
+  CLASSIC_COUNTDOWN = 'classic_countdown',
+  CLASSIC_TODAY_STATISTICS = 'classic_today_statistics',
+  CLASSIC_BEFORE_AFTER = 'classic_before_&_after',
+  CLASSIC_RATES = 'classic_rates',
+  CLASSIC_PRODUCT_FUNNEL = 'classic_product_funnel',
+  CLASSIC_FOOTER = 'classic_footer',
+  CLASSIC_ORDER_CONFIRMATION_NOTICE = 'classic_order_confirmation_notice',
+  CLASSIC_FAQ = 'classic_faq',
+  CLASSIC_PRODUCT_PREVIEW = 'classic_product_preview',
+  CLASSIC_PRODUCT_USAGE = 'classic_product_usage',
+  CLASSIC_DELIVERY_FEATURES = 'classic_delivery_features',
+  CLASSIC_PRODUCT_FEATURES = 'classic_product_features',
+  CLASSIC_GALLERY = 'classic_Gallery',
+  CLASSIC_LOGOS_CAROUSEL = 'classic_logos_carousel',
+  CLASSIC_VISITORS = 'classic_visitors',
+  CLASSIC_ORDER_THROUGH_WHATSAPP = 'classic_order_through_whatsapp',
+  CLASSIC_BUTTON_WITH_LINK = 'classic_button_with_link',
+  CLASSIC_COUPON = 'classic_coupon'
+}
+
+// Show Value Enum
+export enum ShowValue {
+  HIDDEN = 0,
+  VISIBLE = 1
+}
+
 export interface Root {
   code: number;
   status: number;
@@ -43,9 +78,9 @@ export interface Block {
   id?: number;
   store_id: number;
   funnel_id: number;
-  key: string;
+  key: BlockKey;
   data: BlockData;
-  show: number;
+  show: ShowValue;
   deleted_at?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -67,9 +102,9 @@ export interface BlockData {
 export interface BlockSessionStorage {
   store_id: number;
   funnel_id: number;
-  key: string;
+  key: BlockKey;
   data: BlockData;
-  show: number;
+  show: ShowValue;
   order: number;
 }
 

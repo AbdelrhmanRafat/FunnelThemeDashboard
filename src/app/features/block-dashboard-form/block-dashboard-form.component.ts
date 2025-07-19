@@ -1,9 +1,8 @@
-import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
+// block-dashboard-form.component.ts
+import { Component, inject, input, signal, computed } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-import { BlocksService } from '../../core/services/blocks.service';
 import { BlockSessionStorage } from '../../models/theme.classic.blocks';
-import { BlockStateService } from '../../core/services/blockstate.service';
 
 @Component({
   selector: 'app-block-dashboard-form',
@@ -12,186 +11,114 @@ import { BlockStateService } from '../../core/services/blockstate.service';
   templateUrl: './block-dashboard-form.component.html',
   styleUrl: './block-dashboard-form.component.scss'
 })
-export class BlockDashboardFormComponent implements OnInit {
-  private blocksService = inject(BlocksService);
+export class BlockDashboardFormComponent {
+  // Injected services
   private sanitizer = inject(DomSanitizer);
-  private blockStateService = inject(BlockStateService);
 
-  // Signals for state management
-  private readonly _allBlocks = signal<BlockSessionStorage[]>([]);
-  private readonly _selectedViewMode = signal<'desktop' | 'mobile'>('desktop');
+  // Inputs from parent
+  selectedBlock = input<BlockSessionStorage | null>(null);
+  funnelId = input<number | null>(null);
 
-  // Public readonly signals
-  readonly allBlocks = this._allBlocks.asReadonly();
+  // View mode signal
+  private _selectedViewMode = signal<'desktop' | 'mobile'>('desktop');
   readonly selectedViewMode = this._selectedViewMode.asReadonly();
 
-  // Get selected block from shared state service
-  readonly selectedBlock = this.blockStateService.selectedBlock;
-  readonly selectedBlockKey = this.blockStateService.selectedBlockKey;
-  readonly hasSelectedBlock = this.blockStateService.hasSelectedBlock;
+  // Computed properties
+  readonly currentBlock = computed(() => this.selectedBlock());
+  readonly hasSelectedBlock = computed(() => this.selectedBlock() !== null);
 
-  // Computed property to show either only selected block or all visible blocks
-  readonly blocks = computed(() => {
-    const allBlocks = this._allBlocks();
-    const currentSelectedBlock = this.selectedBlock();
+  readonly previewUrl = computed(() => {
+    const block = this.selectedBlock();
+    const currentFunnelId = this.funnelId();
     
-    // If a block is selected, show only that block
-    if (currentSelectedBlock) {
-      return allBlocks.filter(block => block.key === currentSelectedBlock.key);
+    if (!block || !currentFunnelId) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
     }
     
-    // Otherwise show all visible blocks
-    return allBlocks.filter(block => block.show === 1);
+    const url = `https://funnel.baseet.cloud/?f=${currentFunnelId}&lang=ar&blockKey=${encodeURIComponent(block.key)}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   });
 
-  // Effect to react to selectedBlock changes
-  constructor() {
-    effect(() => {
-      const selectedBlock = this.selectedBlock();
-      if (selectedBlock) {
-        console.log('Selected block changed:', selectedBlock.key);
-        // Ensure the selected block has the latest data
-        this.updateSelectedBlockData(selectedBlock.key);
-      }
-    });
-  }
-
-  ngOnInit(): void {
-    this.loadBlocks();
-  }
-
-  loadBlocks(): void {
-    this.blocksService.getBlocks().subscribe({
-      next: (blocks) => {
-        this._allBlocks.set(blocks);
-        
-        // Update selected block with fresh data if one is selected
-        const selectedKey = this.selectedBlockKey();
-        if (selectedKey) {
-          const updatedSelectedBlock = blocks.find(block => block.key === selectedKey);
-          if (updatedSelectedBlock) {
-            this.blockStateService.updateSelectedBlock(updatedSelectedBlock);
-          } else {
-            // Selected block no longer exists, clear selection
-            this.blockStateService.clearSelection();
-          }
-        }
-      },
-      error: (error) => console.error('Failed to load blocks:', error)
-    });
-  }
-
-  /**
-   * Update selected block data with fresh information from allBlocks
-   */
-  private updateSelectedBlockData(blockKey: string): void {
-    const allBlocks = this._allBlocks();
-    const updatedBlock = allBlocks.find(block => block.key === blockKey);
-    if (updatedBlock) {
-      this.blockStateService.updateSelectedBlock(updatedBlock);
-    }
-  }
-
+  // View mode controls
   switchViewMode(mode: 'desktop' | 'mobile'): void {
     this._selectedViewMode.set(mode);
   }
 
-  getIframeClasses(): string {
-    const baseClasses = 'border-0 transition-all duration-300 ease-in-out';
-    return `${baseClasses} w-full h-full`;
+  // Utility methods
+  getBlockDisplayName(key: string): string {
+    return key
+      .replace(/^classic_/, '')
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, letter => letter.toUpperCase());
   }
 
+  getBlockIcon(key: string): string {
+    const iconMap: Record<string, string> = {
+      'classic_header': '🏠',
+      'classic_footer': '📧',
+      'classic_form_fields': '📝',
+      'classic_reviews': '⭐',
+      'classic_countdown': '⏰',
+      'classic_Image_Text_overlay': '🖼️',
+      'classic_Image_Text_beside': '📄',
+      'classic_product_funnel': '🛒',
+      'classic_Gallery': '🖼️',
+      'classic_before_&_after': '🔄',
+      'classic_text-bar': '📊',
+      'classic_today_statistics': '📈',
+      'classic_rates': '⭐',
+      'classic_order_confirmation_notice': '✅',
+      'classic_faq': '❓',
+      'classic_product_preview': '👁️',
+      'classic_product_usage': '🎥',
+      'classic_delivery_features': '🚚',
+      'classic_product_features': '✨',
+      'classic_logos_carousel': '🏢',
+      'classic_visitors': '👥',
+      'classic_order_through_whatsapp': '💬',
+      'classic_button_with_link': '🔗',
+      'classic_coupon': '🎫'
+    };
+    
+    return iconMap[key] || '📦';
+  }
+
+  getBlockTypeColor(key: string): string {
+    if (key.includes('header') || key.includes('footer')) return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (key.includes('form') || key.includes('order')) return 'bg-green-100 text-green-800 border-green-200';
+    if (key.includes('image') || key.includes('gallery')) return 'bg-purple-100 text-purple-800 border-purple-200';
+    if (key.includes('review') || key.includes('rate')) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    if (key.includes('countdown') || key.includes('statistic')) return 'bg-red-100 text-red-800 border-red-200';
+    if (key.includes('product')) return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+    return 'bg-gray-100 text-gray-800 border-gray-200';
+  }
+
+  // CSS helpers
   getContainerClasses(): string {
-    if (this._selectedViewMode() === 'desktop') {
-      return 'w-full min-w-[1400px] overflow-x-auto';
-    } else {
-      return 'flex justify-center w-full';
-    }
+    return this.selectedViewMode() === 'desktop' ? 'w-full' : 'flex justify-center w-full';
   }
 
-  /**
-   * Method to ensure URL integrity
-   */
-  private createSafeUrl(blockKey: string): string {
-    const safeBlockKey = encodeURIComponent(blockKey);
-    return `https://funnel.baseet.cloud/?f=4&lang=ar&blockKey=${safeBlockKey}`;
-  }
-
-  /**
-   * Get iframe URL with security bypass
-   */
-  getIframeUrl(blockKey?: string): SafeResourceUrl {
-    const key = blockKey || this.selectedBlockKey();
-    if (!key) {
-      return this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
-    }
-    
-    const url = this.createSafeUrl(key);
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
-  }
-
-  /**
-   * Method to get display info for current view state
-   */
-  getDisplayInfo(): { title: string; count: number } {
-    const selectedBlock = this.selectedBlock();
-    
-    if (selectedBlock) {
-      return {
-        title: `Selected Block: ${selectedBlock.data?.title_en || selectedBlock.key}`,
-        count: 1
-      };
-    }
-    
-    const visibleCount = this.blocks().length;
+  getMobileFrameStyle(): object {
     return {
-      title: 'All Visible Blocks',
-      count: visibleCount
+      'width': '400px',
+      'height': '750px',
+      'margin': '0 auto'
     };
   }
 
-  /**
-   * Get component display name from key
-   */
-  getComponentDisplayName(componentKey: string): string {
-    return componentKey
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+  getDesktopFrameStyle(): object {
+    return {
+      'min-height': '750px',
+      'width': '100%'
+    };
   }
 
-  /**
-   * Manually select a block (if needed for programmatic selection)
-   */
-  selectBlock(block: BlockSessionStorage): void {
-    this.blockStateService.setSelectedBlock(block);
-  }
-
-  /**
-   * Clear current selection
-   */
-  clearSelection(): void {
-    this.blockStateService.clearSelection();
-  }
-
-  /**
-   * Refresh data for current view
-   */
-  refreshData(): void {
-    this.loadBlocks();
-  }
-
-  /**
-   * Check if view mode is mobile
-   */
-  isMobileView(): boolean {
-    return this._selectedViewMode() === 'mobile';
-  }
-
-  /**
-   * Check if view mode is desktop
-   */
+  // View checks
   isDesktopView(): boolean {
-    return this._selectedViewMode() === 'desktop';
+    return this.selectedViewMode() === 'desktop';
+  }
+
+  isMobileView(): boolean {
+    return this.selectedViewMode() === 'mobile';
   }
 }

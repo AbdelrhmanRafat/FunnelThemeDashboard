@@ -1,14 +1,24 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';  // Add this import
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, withHashLocation, withInMemoryScrolling, withViewTransitions } from '@angular/router';
+import { provideHttpClient, withFetch } from '@angular/common/http';  // Add this import
 
 import { routes } from './app.routes';
-import { provideClientHydration } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideToastr } from 'ngx-toastr';
+import { provideAnimations } from '@angular/platform-browser/animations';
+
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes), 
-    provideHttpClient()  // Add this line
-  ]
+    providers: [provideRouter(routes,
+    withHashLocation(),
+    withViewTransitions(),
+    withInMemoryScrolling({
+     scrollPositionRestoration : 'top'
+    }),
+   ),
+   provideHttpClient(withFetch()),
+   importProvidersFrom(),
+   provideAnimations(), // required animations providers
+   provideToastr(), provideAnimationsAsync(),
+  ],
 };

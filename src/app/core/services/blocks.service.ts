@@ -2,7 +2,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { delay, map, switchMap } from 'rxjs/operators';
-import { AllBlocksSessionStorage, Block, BlockData, BlockSessionStorage, FunnelRes } from '../../models/theme.classic.blocks';
+import { AllBlocksSessionStorage, Block, BlockData, BlockSessionStorage, FunnelRes, BlockKey, ShowValue } from '../../models/theme.classic.blocks';
 import { getFunnelPage } from './api.service';
 import { StorageService } from './storage.service';
 import { ThemeSelectService } from './theme-select.service';
@@ -21,12 +21,12 @@ export class BlocksService {
   readonly loading = this._loading.asReadonly();
   readonly error = this._error.asReadonly();
 
-  // Computed properties
+  // Computed properties with updated enum usage
   readonly visibleBlocks = computed(() => 
-    this._blocks().filter(block => block.show === 1)
+    this._blocks().filter(block => block.show === ShowValue.VISIBLE)
   );
   readonly hiddenBlocks = computed(() => 
-    this._blocks().filter(block => block.show === 0)
+    this._blocks().filter(block => block.show === ShowValue.HIDDEN)
   );
   readonly totalCount = computed(() => this._blocks().length);
   readonly visibleCount = computed(() => this.visibleBlocks().length);
@@ -78,7 +78,11 @@ export class BlocksService {
       };
 
       // 6. Save to session storage and update signal
-      this.storageService.saveToSessionStorage(allBlocksData);
+      const saveSuccess = this.storageService.saveToSessionStorage(allBlocksData);
+      if (!saveSuccess) {
+        throw new Error('Failed to save to session storage');
+      }
+      
       this._blocks.set(sessionBlocks);
 
       return allBlocksData;
@@ -102,7 +106,7 @@ export class BlocksService {
       funnel_id: funnelData.id,
       key: mockBlock.key,
       data: mockBlock.data,
-      show: 0, // Mock data starts as hidden
+      show: ShowValue.HIDDEN, // Mock data starts as hidden
       order: index // Add order starting from 0
     }));
   }
@@ -126,7 +130,7 @@ export class BlocksService {
           store_id: apiBlock.store_id,
           funnel_id: apiBlock.funnel_id,
           data: apiBlock.data,
-          show: 1 // API blocks are visible
+          show: ShowValue.VISIBLE // API blocks are visible
         };
       } else {
         // Add new block with next order
@@ -136,7 +140,7 @@ export class BlocksService {
           funnel_id: apiBlock.funnel_id,
           key: apiBlock.key,
           data: apiBlock.data,
-          show: 1,
+          show: ShowValue.VISIBLE,
           order: maxOrder
         });
       }
@@ -151,7 +155,7 @@ export class BlocksService {
     return of(this._blocks()).pipe(delay(200));
   }
 
-  getBlockByKey(key: string): Observable<BlockSessionStorage | undefined> {
+  getBlockByKey(key: BlockKey): Observable<BlockSessionStorage | undefined> {
     return of(this._blocks().find(block => block.key === key)).pipe(delay(200));
   }
 
@@ -165,7 +169,7 @@ export class BlocksService {
 
   // ===== CRUD OPERATIONS =====
 
-  updateBlock(key: string, updatedData: Partial<BlockData>): Observable<{ success: boolean; message: string; data?: BlockSessionStorage }> {
+  updateBlock(key: BlockKey, updatedData: Partial<BlockData>): Observable<{ success: boolean; message: string; data?: BlockSessionStorage }> {
     return of(null).pipe(
       map(() => {
         const blocks = [...this._blocks()];
@@ -184,7 +188,11 @@ export class BlocksService {
 
         // Update session storage
         const allBlocksData: AllBlocksSessionStorage = { allBlocks: blocks };
-        this.storageService.saveToSessionStorage(allBlocksData);
+        const saveSuccess = this.storageService.saveToSessionStorage(allBlocksData);
+        
+        if (!saveSuccess) {
+          throw new Error('Failed to save updated block to session storage');
+        }
 
         // Update signal
         this._blocks.set(blocks);
@@ -199,7 +207,7 @@ export class BlocksService {
     );
   }
 
-  toggleBlockVisibility(key: string): Observable<{ success: boolean; message: string; data?: BlockSessionStorage }> {
+  toggleBlockVisibility(key: BlockKey): Observable<{ success: boolean; message: string; data?: BlockSessionStorage }> {
     return of(null).pipe(
       map(() => {
         const blocks = [...this._blocks()];
@@ -209,11 +217,18 @@ export class BlocksService {
           throw new Error('Block not found');
         }
 
-        blocks[index].show = blocks[index].show === 1 ? 0 : 1;
+        // Updated with enum usage
+        blocks[index].show = blocks[index].show === ShowValue.VISIBLE 
+          ? ShowValue.HIDDEN 
+          : ShowValue.VISIBLE;
 
         // Update session storage
         const allBlocksData: AllBlocksSessionStorage = { allBlocks: blocks };
-        this.storageService.saveToSessionStorage(allBlocksData);
+        const saveSuccess = this.storageService.saveToSessionStorage(allBlocksData);
+        
+        if (!saveSuccess) {
+          throw new Error('Failed to save visibility change to session storage');
+        }
 
         // Update signal
         this._blocks.set(blocks);
@@ -230,7 +245,7 @@ export class BlocksService {
 
   // ===== REORDERING OPERATIONS =====
 
-  updateBlockOrder(orderedBlockKeys: string[]): Observable<{ success: boolean; message: string; data?: BlockSessionStorage[] }> {
+  updateBlockOrder(orderedBlockKeys: BlockKey[]): Observable<{ success: boolean; message: string; data?: BlockSessionStorage[] }> {
     return of(null).pipe(
       map(() => {
         const currentBlocks = [...this._blocks()];
@@ -249,7 +264,7 @@ export class BlocksService {
 
         // Add any blocks that weren't in the ordered list
         currentBlocks.forEach(block => {
-          if (!orderedBlockKeys.includes(block.key)) {
+          if (!orderedBlockKeys.includes(block.key as BlockKey)) {
             reorderedBlocks.push({
               ...block,
               order: reorderedBlocks.length
@@ -259,7 +274,11 @@ export class BlocksService {
 
         // Update session storage
         const allBlocksData: AllBlocksSessionStorage = { allBlocks: reorderedBlocks };
-        this.storageService.saveToSessionStorage(allBlocksData);
+        const saveSuccess = this.storageService.saveToSessionStorage(allBlocksData);
+        
+        if (!saveSuccess) {
+          throw new Error('Failed to save block order to session storage');
+        }
 
         // Update signal
         this._blocks.set(reorderedBlocks);
@@ -274,7 +293,7 @@ export class BlocksService {
     );
   }
 
-  moveBlockUp(key: string): Observable<{ success: boolean; message: string }> {
+  moveBlockUp(key: BlockKey): Observable<{ success: boolean; message: string }> {
     return of(null).pipe(
       map(() => {
         const blocks = [...this._blocks()];
@@ -294,7 +313,11 @@ export class BlocksService {
 
         // Update session storage
         const allBlocksData: AllBlocksSessionStorage = { allBlocks: blocks };
-        this.storageService.saveToSessionStorage(allBlocksData);
+        const saveSuccess = this.storageService.saveToSessionStorage(allBlocksData);
+        
+        if (!saveSuccess) {
+          throw new Error('Failed to save block order to session storage');
+        }
 
         // Update signal
         this._blocks.set(blocks);
@@ -308,7 +331,7 @@ export class BlocksService {
     );
   }
 
-  moveBlockDown(key: string): Observable<{ success: boolean; message: string }> {
+  moveBlockDown(key: BlockKey): Observable<{ success: boolean; message: string }> {
     return of(null).pipe(
       map(() => {
         const blocks = [...this._blocks()];
@@ -328,7 +351,11 @@ export class BlocksService {
 
         // Update session storage
         const allBlocksData: AllBlocksSessionStorage = { allBlocks: blocks };
-        this.storageService.saveToSessionStorage(allBlocksData);
+        const saveSuccess = this.storageService.saveToSessionStorage(allBlocksData);
+        
+        if (!saveSuccess) {
+          throw new Error('Failed to save block order to session storage');
+        }
 
         // Update signal
         this._blocks.set(blocks);
@@ -380,9 +407,23 @@ export class BlocksService {
     return of(this.visibleCount()).pipe(delay(200));
   }
 
+  // ===== FINAL OUTPUT METHOD =====
+
+  logFinalState(): void {
+    const visibleBlocks = this.visibleBlocks()
+      .sort((a, b) => a.order - b.order); // Ensure proper order
+      
+    console.log('=== FINAL SAVED DATA ===');
+    console.log('All blocks:', this._blocks());
+    console.log('=== VISIBLE BLOCKS IN ORDER ===');
+    console.log('Visible blocks:', visibleBlocks);
+    console.log('Total blocks:', this.totalCount());
+    console.log('Visible count:', this.visibleCount());
+  }
+
   // ===== ERROR SIMULATION (For testing) =====
 
-  updateBlockOrderWithError(orderedBlockKeys: string[]): Observable<any> {
+  updateBlockOrderWithError(orderedBlockKeys: BlockKey[]): Observable<any> {
     return of(null).pipe(
       delay(200),
       switchMap(() => {

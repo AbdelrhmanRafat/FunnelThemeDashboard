@@ -1,175 +1,262 @@
-import { Component, inject, OnInit, Output, EventEmitter, signal, computed } from '@angular/core';
+// block-sidebar.component.ts
+import { Component, inject, input, output, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import { BlockSessionStorage, BlockKey, ShowValue } from '../../models/theme.classic.blocks';
 import { BlocksService } from '../../core/services/blocks.service';
-import { BlockSessionStorage } from '../../models/theme.classic.blocks';
-import { BlockStateService } from '../../core/services/blockstate.service';
 
 @Component({
   selector: 'app-block-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './block-sidebar.component.html',
   styleUrl: './block-sidebar.component.scss'
 })
-export class BlockSidebarComponent implements OnInit {
+export class BlockSidebarComponent {
+  // Injected services
   private blocksService = inject(BlocksService);
-  private blockStateService = inject(BlockStateService);
+  private toastr = inject(ToastrService);
 
-  // Output events
-  @Output() blockSelected = new EventEmitter<BlockSessionStorage>();
-  @Output() closeMobileSidebar = new EventEmitter<void>();
+  // Inputs from parent component
+  selectedBlock = input<BlockSessionStorage | null>(null);
 
-  // Signals for state management
-  private readonly _allBlocks = signal<BlockSessionStorage[]>([]);
-  private readonly _isLoading = signal<boolean>(false);
-  private readonly _message = signal<string>('');
-  private readonly _messageType = signal<'success' | 'error'>('success');
+  // Outputs to parent component (only UI-specific events)
+  blockSelected = output<BlockSessionStorage>();
+  closeMobileSidebar = output<void>();
+
+  // Internal component signals
+  private _searchQuery = signal<string>('');
+  private _activeFilter = signal<'all' | 'visible' | 'hidden'>('all');
 
   // Public readonly signals
-  readonly allBlocks = this._allBlocks.asReadonly();
-  readonly isLoading = this._isLoading.asReadonly();
-  readonly message = this._message.asReadonly();
-  readonly messageType = this._messageType.asReadonly();
+  readonly searchQuery = this._searchQuery.asReadonly();
+  readonly activeFilter = this._activeFilter.asReadonly();
 
-  // Get selected block key from shared state service
-  readonly selectedBlockKey = this.blockStateService.selectedBlockKey;
+  // Service-based computed properties (automatically reactive)
+  readonly allBlocks = computed(() => this.blocksService.blocks());
+  readonly visibleBlocks = computed(() => this.blocksService.visibleBlocks());
+  readonly hiddenBlocks = computed(() => this.blocksService.hiddenBlocks());
+  readonly totalCount = computed(() => this.blocksService.totalCount());
+  readonly visibleCount = computed(() => this.blocksService.visibleCount());
+  readonly hiddenCount = computed(() => this.blocksService.hiddenBlocks().length);
+  readonly loading = computed(() => this.blocksService.loading());
 
-  // Computed property to always show all blocks (for selection)
-  readonly blocks = computed(() => {
-    return this._allBlocks();
+  // Filtered and searched blocks
+  readonly filteredBlocks = computed(() => {
+    let blocks: BlockSessionStorage[] = [];
+    
+    // Apply filter
+    switch (this.activeFilter()) {
+      case 'visible':
+        blocks = this.visibleBlocks();
+        break;
+      case 'hidden':
+        blocks = this.hiddenBlocks();
+        break;
+      default:
+        blocks = this.allBlocks();
+    }
+
+    // Apply search
+    const query = this.searchQuery().toLowerCase().trim();
+    if (query) {
+      blocks = blocks.filter(block => 
+        block.key.toLowerCase().includes(query) ||
+        block.data.title_ar?.toLowerCase().includes(query) ||
+        block.data.title_en?.toLowerCase().includes(query) ||
+        this.getBlockDisplayName(block.key).toLowerCase().includes(query)
+      );
+    }
+
+    // Sort by order
+    return blocks.sort((a, b) => a.order - b.order);
   });
 
-  // Computed properties using signals
-  readonly visibleBlocks = computed(() => 
-    this._allBlocks().filter(block => block.show === 1)
-  );
-
-  readonly hiddenBlocks = computed(() => 
-    this._allBlocks().filter(block => block.show === 0)
-  );
-
-  readonly totalBlocksCount = computed(() => this._allBlocks().length);
-  readonly visibleBlocksCount = computed(() => this.visibleBlocks().length);
-  readonly hiddenBlocksCount = computed(() => this.hiddenBlocks().length);
-
-  // Computed properties for current view
-  readonly currentViewTitle = computed(() => {
-    return 'All Blocks';
+  // Computed for search results info
+  readonly searchResultsInfo = computed(() => {
+    const total = this.filteredBlocks().length;
+    const hasSearch = this.searchQuery().trim().length > 0;
+    const hasFilter = this.activeFilter() !== 'all';
+    
+    return { total, hasSearch, hasFilter };
   });
 
-  ngOnInit(): void {
-    this.loadBlocks();
-  }
-
-  loadBlocks(): void {
-    this._isLoading.set(true);
-    this.blocksService.getBlocks().subscribe({
-      next: (blocks) => {
-        this._allBlocks.set(blocks);
-        this._isLoading.set(false);
-        
-        // Check if we have a persisted selected block and update it with fresh data
-        const selectedKey = this.blockStateService.selectedBlockKey();
-        if (selectedKey) {
-          const selectedBlock = blocks.find(block => block.key === selectedKey);
-          if (selectedBlock) {
-            // Update the selected block with fresh data
-            this.blockStateService.updateSelectedBlock(selectedBlock);
-          } else {
-            // Selected block no longer exists, clear selection
-            this.blockStateService.clearSelection();
-          }
-        }
-      },
-      error: (error) => {
-        this.showMessage('Failed to load blocks', 'error');
-        this._isLoading.set(false);
+  constructor() {
+    // Effect to show loading feedback
+    effect(() => {
+      if (this.loading()) {
+        // Optional: You can add loading feedback here if needed
       }
     });
   }
 
-  // Initialize blocks session
-  async initializeSession(funnelId: number): Promise<void> {
-    this._isLoading.set(true);
-    try {
-      await this.blocksService.initializeBlocksSession(funnelId);
-      this.loadBlocks(); // Reload blocks after initialization
-    } catch (error) {
-      this.showMessage('Failed to initialize blocks session', 'error');
-      this._isLoading.set(false);
-    }
+  // Search functionality
+  onSearchChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this._searchQuery.set(target.value);
   }
 
-  getComponentDisplayName(componentKey: string): string {
-    return componentKey
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+  clearSearch(): void {
+    this._searchQuery.set('');
   }
 
-  // Search blocks
-  searchBlocks(query: string): void {
-    if (query.trim()) {
-      this.blocksService.searchBlocks(query).subscribe({
-        next: (blocks) => {
-          this._allBlocks.set(blocks);
-        },
-        error: (error) => {
-          this.showMessage('Search failed', 'error');
-        }
-      });
-    } else {
-      this.loadBlocks();
-    }
-  }
-
-  private showMessage(message: string, type: 'success' | 'error'): void {
-    this._message.set(message);
-    this._messageType.set(type);
+  // Filter functionality
+  setFilter(filter: 'all' | 'visible' | 'hidden'): void {
+    this._activeFilter.set(filter);
     
-    setTimeout(() => {
-      this._message.set('');
-    }, 3000);
+    // Optional feedback
+    const filterNames = {
+      'all': 'All Blocks',
+      'visible': 'Visible Blocks',
+      'hidden': 'Hidden Blocks'
+    };
+    
+    this.toastr.info(`Showing: ${filterNames[filter]}`, 'Filter Applied');
   }
 
+  // Block selection
   selectBlock(block: BlockSessionStorage): void {
-    // Update the shared state service
-    this.blockStateService.setSelectedBlock(block);
-    
-    // Emit the event for parent component
     this.blockSelected.emit(block);
+  }
+
+  // Block visibility toggle
+  toggleBlockVisibility(block: BlockSessionStorage, event: Event): void {
+    event.stopPropagation(); // Prevent block selection
     
-    // Close mobile sidebar
-    this.closeMobileSidebar.emit();
-  }
-
-  onCloseMobileSidebar(): void {
-    this.closeMobileSidebar.emit();
-  }
-
-  // Show all blocks (clear selection)
-  showAllBlocks(): void {
-    this.blockStateService.clearSelection();
-    this.blockSelected.emit(null as any);
-  }
-
-  // Clear session storage
-  clearSession(): void {
-    this.blocksService.clearSessionStorage().subscribe({
-      next: (response) => {
-        this.showMessage('Session cleared', 'success');
-        this._allBlocks.set([]);
-        // Clear the selected block state as well
-        this.blockStateService.clearSelection();
+    this.blocksService.toggleBlockVisibility(block.key as BlockKey).subscribe({
+      next: (result) => {
+        if (result.success) {
+          const action = block.show === ShowValue.VISIBLE ? 'hidden' : 'shown';
+          this.toastr.success(`Block "${this.getBlockDisplayName(block.key)}" ${action}`, 'Visibility Updated');
+        }
       },
       error: (error) => {
-        this.showMessage('Failed to clear session', 'error');
+        this.toastr.error(`Failed to toggle visibility for "${this.getBlockDisplayName(block.key)}"`, 'Error');
+        console.error('Toggle visibility error:', error);
       }
     });
   }
 
-  // Helper method to check if a block is selected
-  isBlockSelected(blockKey: string): boolean {
-    return this.blockStateService.isBlockSelected(blockKey);
+  // Block reordering
+  moveBlockUp(block: BlockSessionStorage, event: Event): void {
+    event.stopPropagation();
+    
+    this.blocksService.moveBlockUp(block.key as BlockKey).subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.toastr.success(`Block "${this.getBlockDisplayName(block.key)}" moved up`, 'Order Updated');
+        }
+      },
+      error: (error) => {
+        this.toastr.error(`Failed to move "${this.getBlockDisplayName(block.key)}" up`, 'Error');
+        console.error('Move up error:', error);
+      }
+    });
+  }
+
+  moveBlockDown(block: BlockSessionStorage, event: Event): void {
+    event.stopPropagation();
+    
+    this.blocksService.moveBlockDown(block.key as BlockKey).subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.toastr.success(`Block "${this.getBlockDisplayName(block.key)}" moved down`, 'Order Updated');
+        }
+      },
+      error: (error) => {
+        this.toastr.error(`Failed to move "${this.getBlockDisplayName(block.key)}" down`, 'Error');
+        console.error('Move down error:', error);
+      }
+    });
+  }
+
+  // Utility methods
+  getBlockDisplayName(key: string): string {
+    // Convert block key to readable name
+    return key
+      .replace(/^classic_/, '')
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, letter => letter.toUpperCase());
+  }
+
+  getBlockIcon(key: string): string {
+    // Return appropriate icon based on block type
+    const iconMap: Record<string, string> = {
+      'classic_header': '🏠',
+      'classic_footer': '📧',
+      'classic_form_fields': '📝',
+      'classic_reviews': '⭐',
+      'classic_countdown': '⏰',
+      'classic_Image_Text_overlay': '🖼️',
+      'classic_Image_Text_beside': '📄',
+      'classic_product_funnel': '🛒',
+      'classic_Gallery': '🖼️',
+      'classic_before_&_after': '🔄',
+      'classic_text-bar': '📊',
+      'classic_today_statistics': '📈',
+      'classic_rates': '⭐',
+      'classic_order_confirmation_notice': '✅',
+      'classic_faq': '❓',
+      'classic_product_preview': '👁️',
+      'classic_product_usage': '🎥',
+      'classic_delivery_features': '🚚',
+      'classic_product_features': '✨',
+      'classic_logos_carousel': '🏢',
+      'classic_visitors': '👥',
+      'classic_order_through_whatsapp': '💬',
+      'classic_button_with_link': '🔗',
+      'classic_coupon': '🎫'
+    };
+    
+    return iconMap[key] || '📦';
+  }
+
+  getBlockTypeColor(key: string): string {
+    // Return Tailwind color classes based on block type
+    if (key.includes('header') || key.includes('footer')) return 'bg-blue-100 text-blue-800';
+    if (key.includes('form') || key.includes('order')) return 'bg-green-100 text-green-800';
+    if (key.includes('image') || key.includes('gallery')) return 'bg-purple-100 text-purple-800';
+    if (key.includes('review') || key.includes('rate')) return 'bg-yellow-100 text-yellow-800';
+    if (key.includes('countdown') || key.includes('statistic')) return 'bg-red-100 text-red-800';
+    if (key.includes('product')) return 'bg-indigo-100 text-indigo-800';
+    return 'bg-gray-100 text-gray-800';
+  }
+
+  isBlockSelected(block: BlockSessionStorage): boolean {
+    return this.selectedBlock()?.key === block.key;
+  }
+
+  canMoveUp(block: BlockSessionStorage): boolean {
+    const blocks = this.allBlocks();
+    const currentIndex = blocks.findIndex(b => b.key === block.key);
+    return currentIndex > 0;
+  }
+
+  canMoveDown(block: BlockSessionStorage): boolean {
+    const blocks = this.allBlocks();
+    const currentIndex = blocks.findIndex(b => b.key === block.key);
+    return currentIndex < blocks.length - 1;
+  }
+
+  // Mobile sidebar close
+  closeMobile(): void {
+    this.closeMobileSidebar.emit();
+  }
+
+  // Quick actions
+  showAllBlocks(): void {
+    // This would need a service method to show all blocks
+    this.toastr.info('Show all blocks functionality', 'Quick Action');
+  }
+
+  hideAllBlocks(): void {
+    // This would need a service method to hide all blocks
+    this.toastr.info('Hide all blocks functionality', 'Quick Action');
+  }
+
+  resetBlockOrder(): void {
+    // This would need a service method to reset order
+    this.toastr.info('Reset block order functionality', 'Quick Action');
   }
 }
