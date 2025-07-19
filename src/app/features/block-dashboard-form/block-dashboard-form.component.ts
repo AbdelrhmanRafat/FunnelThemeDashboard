@@ -3,17 +3,20 @@ import { Component, inject, input, signal, computed } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { BlockSessionStorage } from '../../models/theme.classic.blocks';
+import { FunnelFormGenericBuilderComponent } from '../../features/Dynamic Form Builder Funnel Blocks/Components/funnel-form-generic-builder/funnel-form-generic-builder.component';
+import { BlocksService } from '../../core/services/blocks.service';
 
 @Component({
   selector: 'app-block-dashboard-form',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FunnelFormGenericBuilderComponent],
   templateUrl: './block-dashboard-form.component.html',
   styleUrl: './block-dashboard-form.component.scss'
 })
 export class BlockDashboardFormComponent {
   // Injected services
   private sanitizer = inject(DomSanitizer);
+  private blocksService = inject(BlocksService);
 
   // Inputs from parent
   selectedBlock = input<BlockSessionStorage | null>(null);
@@ -26,6 +29,15 @@ export class BlockDashboardFormComponent {
   // Computed properties
   readonly currentBlock = computed(() => this.selectedBlock());
   readonly hasSelectedBlock = computed(() => this.selectedBlock() !== null);
+
+  // Get initial data from session storage for the form
+  readonly initialFormData = computed(() => {
+    const block = this.selectedBlock();
+    if (!block) return null;
+    
+    // Return the block's data as initial form data
+    return block.data || null;
+  });
 
   readonly previewUrl = computed(() => {
     const block = this.selectedBlock();
@@ -42,6 +54,73 @@ export class BlockDashboardFormComponent {
   // View mode controls
   switchViewMode(mode: 'desktop' | 'mobile'): void {
     this._selectedViewMode.set(mode);
+  }
+
+  // Handle form data changes from the dynamic form
+  onFormDataChanged(formData: any): void {
+    const block = this.selectedBlock();
+    if (!block) return;
+
+    console.log('📝 Form data changed for block:', {
+      blockKey: block.key,
+      newData: formData,
+      timestamp: new Date().toISOString()
+    });
+
+    // Update the block in session storage via BlocksService
+    this.blocksService.updateBlock(block.key as any, formData).subscribe({
+      next: (result) => {
+        if (result.success) {
+          console.log('✅ Block updated successfully:', result.message);
+        }
+      },
+      error: (error) => {
+        console.error('❌ Failed to update block:', error);
+      }
+    });
+  }
+
+  // Handle form submission from the dynamic form
+  onFormSubmitted(formData: any): void {
+    const block = this.selectedBlock();
+    if (!block) return;
+
+    console.log('🚀 Form submitted for block:', {
+      blockKey: block.key,
+      submittedData: formData,
+      timestamp: new Date().toISOString()
+    });
+
+    // Update block data and save to session storage
+    this.blocksService.updateBlock(block.key as any, formData).subscribe({
+      next: (result) => {
+        if (result.success) {
+          console.log('💾 Block saved successfully to session storage');
+          
+          // Optional: Show success feedback
+          // You could emit an event here to show a success message
+        }
+      },
+      error: (error) => {
+        console.error('❌ Failed to save block:', error);
+      }
+    });
+  }
+
+  // Get form configuration path based on theme
+  getFormConfigPath(): string {
+    // You can make this dynamic based on the funnel theme if needed
+    return 'assets/classic/Json/classicBlocks-form.config.json';
+  }
+
+  // Check if the current block has form configuration
+  hasFormConfiguration(): boolean {
+    const block = this.selectedBlock();
+    if (!block) return false;
+    
+    // You could check if the block key exists in your form configuration
+    // For now, we'll assume all blocks have forms
+    return true;
   }
 
   // Utility methods
@@ -120,5 +199,19 @@ export class BlockDashboardFormComponent {
 
   isMobileView(): boolean {
     return this.selectedViewMode() === 'mobile';
+  }
+
+  // Debug method to log current block data
+  logBlockData(): void {
+    const block = this.selectedBlock();
+    if (block) {
+      console.log('🔍 Current Block Data:', {
+        key: block.key,
+        data: block.data,
+        show: block.show,
+        order: block.order,
+        initialFormData: this.initialFormData()
+      });
+    }
   }
 }

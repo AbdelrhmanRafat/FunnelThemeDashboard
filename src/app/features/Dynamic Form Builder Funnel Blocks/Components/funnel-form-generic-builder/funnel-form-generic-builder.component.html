@@ -5,7 +5,7 @@
   @if (isLoading) {
     <div class="flex items-center justify-center py-12">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      <span class="ml-3 text-gray-600 dark:text-gray-300">Loading form configuration from storage...</span>
+      <span class="ml-3 text-gray-600 dark:text-gray-300">Loading form configuration...</span>
     </div>
   }
   
@@ -29,37 +29,54 @@
     
     <!-- Form Header -->
     <div class="mb-8">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        {{ currentBlock.name }}
-      </h2>
-      <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-        Block Key: <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">{{ blockKey }}</code>
-      </p>
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ currentBlock.name }}
+          </h2>
+          <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            Block Key: <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">{{ blockKey }}</code>
+          </p>
+        </div>
+        
+        <!-- Initial Data Status -->
+        <div class="text-right">
+          @if (hasInitialData()) {
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+              ✅ Has Initial Data
+            </span>
+          } @else {
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+              📝 New Form
+            </span>
+          }
+        </div>
+      </div>
     </div>
     
     <!-- Dynamic Form -->
     <form [formGroup]="dynamicForm" (ngSubmit)="onSubmit()" novalidate>
       
       <!-- Form Fields Container -->
-<div class="space-y-6">
-  @for (field of currentBlock.formFields; track field.value) {
-    
-    <!-- Handle ARRAY_MANAGER separately -->
-    @if (field.type === 'array-manager') {
-      <app-field-array-manager 
-        [field]="field" 
-        [parentForm]="dynamicForm">
-      </app-field-array-manager>
-    } @else {
-      <!-- All other field types go through dynamic-field -->
-      <app-dynamic-field 
-        [field]="field" 
-        [parentForm]="dynamicForm">
-      </app-dynamic-field>
-    }
-    
-  }
-</div>
+      <div class="space-y-6">
+        @for (field of currentBlock.formFields; track field.value) {
+          
+          <!-- Handle ARRAY_MANAGER separately -->
+          @if (field.type === 'array-manager') {
+            <app-field-array-manager 
+              [field]="field" 
+              [parentForm]="dynamicForm">
+            </app-field-array-manager>
+          } @else {
+            <!-- All other field types go through dynamic-field -->
+            <app-dynamic-field 
+              [field]="field" 
+              [parentForm]="dynamicForm">
+            </app-dynamic-field>
+          }
+          
+        }
+      </div>
       
       <!-- Form Actions -->
       <div class="flex items-center justify-between pt-8 mt-8 border-t border-gray-200 dark:border-gray-600">
@@ -81,16 +98,33 @@
             }
           </div>
           
-          <!-- Dirty Status -->
-          @if (isFormDirty) {
-            <span class="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
-              Unsaved changes
+          <!-- Changes Status -->
+          @if (hasUnsavedChanges) {
+            <span class="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded border border-orange-200">
+              🔄 Unsaved changes
+            </span>
+          } @else if (isFormDirty && !hasUnsavedChanges) {
+            <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-200">
+              ✨ Modified
             </span>
           }
         </div>
         
         <!-- Right Side - Action Buttons -->
         <div class="flex items-center space-x-3">
+          
+          <!-- Reset to Initial Data Button (only show if has initial data) -->
+          @if (hasInitialData()) {
+            <button
+              type="button"
+              (click)="resetToInitialData()"
+              [disabled]="!hasUnsavedChanges"
+              class="px-3 py-2 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+              title="Reset to original data"
+            >
+              ⏪ Reset to Original
+            </button>
+          }
           
           <!-- Reset Button -->
           <button
@@ -99,19 +133,25 @@
             [disabled]="!isFormDirty"
             class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
           >
-            Reset
+            🔄 Reset
           </button>
           
           <!-- Submit Button -->
           <button
             type="submit"
             [disabled]="!isFormValid"
-            class="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            [class]="isFormValid 
+              ? 'px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+              : 'px-6 py-2 text-sm font-medium text-white bg-gray-400 border border-transparent rounded-md cursor-not-allowed'"
           >
             @if (isFormValid) {
-              Submit Form
+              @if (hasInitialData()) {
+                💾 Update Block
+              } @else {
+                ✨ Create Block
+              }
             } @else {
-              Fix Errors First
+              ⚠️ Fix Errors First
             }
           </button>
           
@@ -120,6 +160,7 @@
       
     </form>
 
+    
     
   }
   
